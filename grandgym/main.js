@@ -17,8 +17,8 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.1;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x050608);
-scene.fog = new THREE.FogExp2(0x050608, 0.03);
+scene.background = new THREE.Color(0x00122e);
+scene.fog = new THREE.FogExp2(0x00122e, 0.03);
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
@@ -29,7 +29,7 @@ const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
-scene.add(new THREE.HemisphereLight(0x8fb8ff, 0x140804, 0.4));
+scene.add(new THREE.HemisphereLight(0xc1e7fe, 0x001a3d, 0.55));
 const key = new THREE.DirectionalLight(0xffffff, 1.6);
 key.position.set(6, 10, 8);
 scene.add(key);
@@ -38,8 +38,8 @@ rim.position.set(-8, 4, -6);
 scene.add(rim);
 
 /* ---------------- materials ---------------- */
-const FLAME = new THREE.Color(0xff4a12);
-const ICE = new THREE.Color(0x8fd0ff);
+const FLAME = new THREE.Color(0x2f8fd8); // azul Grandmontagne
+const ICE = new THREE.Color(0xc1e7fe); // celeste pálido
 const glow = (c, k = 3) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k), toneMapped: false });
 const steel = new THREE.MeshStandardMaterial({ color: 0xd9dde3, metalness: 1, roughness: 0.18 });
 const darkSteel = new THREE.MeshStandardMaterial({ color: 0x24272c, metalness: 0.85, roughness: 0.35 });
@@ -94,10 +94,10 @@ function makeBarbell(scale = 1) {
   bar.rotation.z = Math.PI / 2;
   g.add(bar);
   const plates = [
-    { r: 1.12, w: 0.24, c: 0xc9201c, glow: FLAME },   // 25 kg
-    { r: 1.12, w: 0.2, c: 0x1d4fc4, glow: ICE },      // 20 kg
-    { r: 0.86, w: 0.16, c: 0xe8b80c, glow: FLAME },   // 15 kg
-    { r: 0.66, w: 0.12, c: 0x1e8c3e, glow: ICE },     // 10 kg
+    { r: 1.12, w: 0.24, c: 0x005da8, glow: ICE },     // 25 kg
+    { r: 1.12, w: 0.2, c: 0xe9f2fb, glow: FLAME },    // 20 kg
+    { r: 0.86, w: 0.16, c: 0x002b64, glow: ICE },     // 15 kg
+    { r: 0.66, w: 0.12, c: 0x85d0f0, glow: FLAME },   // 10 kg
   ];
   for (const s of [-1, 1]) {
     const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 1.9, 32), steel);
@@ -126,8 +126,8 @@ const hero = makeBarbell(0.95);
 hero.position.copy(P[0]);
 scene.add(hero);
 {
-  const l1 = new THREE.PointLight(0xff4a12, 8, 10, 2); l1.position.set(3, -1, 2); hero.add(l1);
-  const l2 = new THREE.PointLight(0x8fd0ff, 8, 10, 2); l2.position.set(-3, 1.5, 2); hero.add(l2);
+  const l1 = new THREE.PointLight(0x2f8fd8, 9, 10, 2); l1.position.set(3, -1, 2); hero.add(l1);
+  const l2 = new THREE.PointLight(0xffffff, 6, 10, 2); l2.position.set(-3, 1.5, 2); hero.add(l2);
 }
 animated.push((t) => {
   hero.rotation.y = -0.5 + Math.sin(t * 0.4) * 0.35 + scrollF * 1.2;
@@ -155,7 +155,7 @@ animated.push((t) => {
   // pool on the ground floor
   const pool = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 2), glow(0x2f7cff, 1.2));
   pool.rotation.x = -Math.PI / 2; pool.position.set(-2, -3.04, 0.6); g.add(pool);
-  const scanner = new THREE.Mesh(new THREE.PlaneGeometry(10, 7), new THREE.MeshBasicMaterial({ color: 0xff5a12, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const scanner = new THREE.Mesh(new THREE.PlaneGeometry(10, 7), new THREE.MeshBasicMaterial({ color: 0x85d0f0, transparent: true, opacity: 0.12, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending }));
   scanner.rotation.x = -Math.PI / 2; g.add(scanner);
   const scanEdge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(10, 7)), new THREE.LineBasicMaterial({ color: FLAME.clone().multiplyScalar(3), toneMapped: false }));
   scanEdge.rotation.x = -Math.PI / 2; g.add(scanEdge);
@@ -171,7 +171,7 @@ animated.push((t) => {
 /* 2 PANATTA — máquina guiada con pila de pesas */
 {
   const g = new THREE.Group(); g.position.copy(P[2]);
-  const red = new THREE.MeshPhysicalMaterial({ color: 0xb3121b, metalness: 0.5, roughness: 0.3, clearcoat: 1 });
+  const red = new THREE.MeshPhysicalMaterial({ color: 0x005da8, metalness: 0.5, roughness: 0.3, clearcoat: 1 });
   const frame = (w, h, d, x, y, z, m = darkSteel) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); g.add(b); return b; };
   frame(3.4, 0.16, 2.2, 0, -2.6, 0);
   frame(0.16, 5.4, 0.16, -0.9, 0.1, -0.6); frame(0.16, 5.4, 0.16, 0.9, 0.1, -0.6);
@@ -184,20 +184,20 @@ animated.push((t) => {
     p.position.set(0, -2.4 + i * 0.165, -0.6);
     stack.add(p); plates.push(p);
   }
-  const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.97, 0.02, 0.47), glow(0xff4a12, 2.5));
+  const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.97, 0.02, 0.47), glow(0x85d0f0, 2.5));
   g.add(stripe);
   const pulley = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.06, 12, 48), steel);
   pulley.position.set(0, 2.55, -0.25); g.add(pulley);
   const cableGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, -0.6), new THREE.Vector3(0, 2.55, -0.6), new THREE.Vector3(0, 2.55, 0.1), new THREE.Vector3(0, 0.6, 1.0)]);
   const cable = new THREE.Line(cableGeo, new THREE.LineBasicMaterial({ color: 0xffffff }));
   g.add(cable);
-  const seat = frame(1.1, 0.22, 1.1, 0, -1.2, 1.0, new THREE.MeshPhysicalMaterial({ color: 0x111214, roughness: 0.6, sheen: 1, sheenColor: new THREE.Color(0x553333) }));
+  const seat = frame(1.1, 0.22, 1.1, 0, -1.2, 1.0, new THREE.MeshPhysicalMaterial({ color: 0x111214, roughness: 0.6, sheen: 1, sheenColor: new THREE.Color(0x335577) }));
   frame(0.16, 1.3, 0.16, 0, -1.9, 1.0);
   const back = frame(1.1, 1.6, 0.2, 0, -0.3, 0.45, seat.material);
   back.rotation.x = -0.15;
   const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.6, 16), steel);
   handle.rotation.z = Math.PI / 2; g.add(handle);
-  const l = new THREE.PointLight(0xff4a12, 10, 12, 2); l.position.set(2, 1, 3); g.add(l);
+  const l = new THREE.PointLight(0x2f8fd8, 10, 12, 2); l.position.set(2, 1, 3); g.add(l);
   const l2 = new THREE.PointLight(0x8fd0ff, 6, 12, 2); l2.position.set(-3, 2, 1); g.add(l2);
   g.rotation.y = -0.7;
   scene.add(g);
@@ -239,7 +239,7 @@ animated.push((t) => {
     o.rotation.set(0.4 + r * 0.5, r * 0.6, 0);
     g.add(o); orbits.push(o);
   }
-  const l = new THREE.PointLight(0xff4a12, 10, 14, 2); l.position.set(0, 0, 4); g.add(l);
+  const l = new THREE.PointLight(0x2f8fd8, 10, 14, 2); l.position.set(0, 0, 4); g.add(l);
   scene.add(g);
   animated.push((t) => {
     wheel.rotation.y = t * 3;
@@ -278,7 +278,7 @@ animated.push((t) => {
     const d = new THREE.Object3D();
     for (let i = 0; i < 60; i++) {
       d.position.set(-7.8 + i * 0.264, 0.08, z); d.updateMatrix(); inst.setMatrixAt(i, d.matrix);
-      inst.setColorAt(i, (i % 10 < 5) ? new THREE.Color(2.2, 0.5, 0.15) : new THREE.Color(1.6, 1.6, 1.8));
+      inst.setColorAt(i, (i % 10 < 5) ? new THREE.Color(0.3, 1.0, 2.2) : new THREE.Color(1.8, 1.8, 1.9));
     }
     g.add(inst); lanes.push(inst);
   }
@@ -306,9 +306,9 @@ animated.push((t) => {
   const hand = (len, w, mat, z) => { const h = new THREE.Group(); const m = new THREE.Mesh(new THREE.BoxGeometry(w, len, 0.06), mat); m.position.y = len / 2 - 0.3; h.add(m); h.position.z = z; g.add(h); return h; };
   const hH = hand(2.0, 0.16, steel, 0.05), hM = hand(2.9, 0.1, steel, 0.1), hS = hand(3.2, 0.03, glow(FLAME, 4), 0.15);
   g.add(new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.3, 24).rotateX(Math.PI / 2), glow(FLAME, 3)));
-  const l = new THREE.PointLight(0xff4a12, 6, 10, 2); l.position.set(0, 0, 3); g.add(l);
+  const l = new THREE.PointLight(0x2f8fd8, 6, 10, 2); l.position.set(0, 0, 3); g.add(l);
   scene.add(g);
-  const on = new THREE.Color(), off = new THREE.Color(0x30343a);
+  const on = new THREE.Color(), off = new THREE.Color(0x1d3557);
   const fmt = new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', hour: 'numeric', minute: 'numeric', second: 'numeric', hourCycle: 'h23' });
   animated.push((t) => {
     const [h, m, s] = fmt.format(new Date()).split(':').map(Number);
@@ -316,7 +316,7 @@ animated.push((t) => {
     hS.rotation.z = -((s + ms) / 60) * Math.PI * 2;
     hM.rotation.z = -((m + s / 60) / 60) * Math.PI * 2;
     hH.rotation.z = -(((h % 12) + m / 60) / 12) * Math.PI * 2;
-    for (let i = 0; i < N; i++) ticks.setColorAt(i, i <= s ? on.setRGB(2.4, 0.4 + i / 120, 0.1) : off);
+    for (let i = 0; i < N; i++) ticks.setColorAt(i, i <= s ? on.setRGB(0.5 + i / 80, 1.3 + i / 120, 2.6) : off);
     ticks.instanceColor.needsUpdate = true;
     g.rotation.y = Math.sin(t * 0.3) * 0.25;
   });
@@ -325,7 +325,7 @@ animated.push((t) => {
 /* 7 PRECIOS — podios de discos */
 {
   const g = new THREE.Group(); g.position.copy(P[7]);
-  const cols = [0xc9201c, 0x1d4fc4, 0xe8b80c, 0x1e8c3e];
+  const cols = [0x005da8, 0xe9f2fb, 0x002b64, 0x85d0f0];
   const heights = [6, 4, 5, 3];
   const stacks = [];
   [-4.2, -1.4, 1.4, 4.2].forEach((x, i) => {
@@ -338,9 +338,9 @@ animated.push((t) => {
     }
     g.add(s); stacks.push(s);
   });
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(8, 64), new THREE.MeshBasicMaterial({ color: 0xff4a12, transparent: true, opacity: 0.06, depthWrite: false, blending: THREE.AdditiveBlending }));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(8, 64), new THREE.MeshBasicMaterial({ color: 0x2f8fd8, transparent: true, opacity: 0.08, depthWrite: false, blending: THREE.AdditiveBlending }));
   floor.rotation.x = -Math.PI / 2; floor.position.y = -2.6; g.add(floor);
-  const l = new THREE.PointLight(0xff6a2b, 10, 16, 2); l.position.set(0, 3, 5); g.add(l);
+  const l = new THREE.PointLight(0x85d0f0, 10, 16, 2); l.position.set(0, 3, 5); g.add(l);
   scene.add(g);
   animated.push((t) => stacks.forEach((s, i) => { s.rotation.y = t * 0.5 * (i % 2 ? 1 : -1); s.position.y = Math.sin(t * 1.2 + i) * 0.12; }));
 }
@@ -351,14 +351,14 @@ animated.push((t) => {
   const orb = new THREE.Mesh(new THREE.IcosahedronGeometry(2.1, 12),
     new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.05, metalness: 0, transmission: 1, thickness: 1.5, ior: 1.4, iridescence: 1, iridescenceIOR: 1.6, envMapIntensity: 1.5 }));
   g.add(orb);
-  const core = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), glow(0xffb38a, 2.2)); g.add(core);
+  const core = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), glow(0x85d0f0, 1.1)); g.add(core);
   const bubbles = [];
   for (let i = 0; i < 24; i++) {
-    const b = new THREE.Mesh(new THREE.SphereGeometry(0.08 + Math.random() * 0.14, 16, 16), glow(i % 3 ? 0xffc6a8 : 0x8fd0ff, 2));
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.08 + Math.random() * 0.14, 16, 16), glow(i % 3 ? 0xc1e7fe : 0x2f8fd8, 2));
     b.userData = { a: Math.random() * 6.28, r: 2.6 + Math.random() * 1.8, y: (Math.random() - 0.5) * 4, s: 0.2 + Math.random() * 0.4 };
     g.add(b); bubbles.push(b);
   }
-  const l = new THREE.PointLight(0xffa080, 10, 12, 2); l.position.set(0, 0, 0); g.add(l);
+  const l = new THREE.PointLight(0x85d0f0, 10, 12, 2); l.position.set(0, 0, 0); g.add(l);
   scene.add(g);
   animated.push((t) => {
     orb.rotation.y = t * 0.2; orb.position.y = Math.sin(t * 0.8) * 0.15;
@@ -385,7 +385,7 @@ animated.push((t) => {
   medal.position.y = -0.6;
   g.add(medal);
   const ribbon = (c, x, rz) => { const r = new THREE.Mesh(new THREE.BoxGeometry(0.7, 3.4, 0.04), new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.5, sheen: 1, sheenColor: new THREE.Color(c) })); r.position.set(x, 2.4, -0.05); r.rotation.z = rz; g.add(r); };
-  ribbon(0xc9201c, -0.45, 0.22); ribbon(0x1d4fc4, 0.45, -0.22);
+  ribbon(0x005da8, -0.45, 0.22); ribbon(0xf4f8fc, 0.45, -0.22);
   const l = new THREE.PointLight(0xffc060, 12, 10, 2); l.position.set(2, 1, 3); g.add(l);
   scene.add(g);
   animated.push((t) => { medal.rotation.y = t * 0.9; g.rotation.z = Math.sin(t * 0.7) * 0.05; g.position.y = P[9].y + Math.sin(t) * 0.12; });
@@ -401,14 +401,14 @@ animated.push((t) => {
   const stars = [];
   for (let i = 0; i < 5; i++) {
     const full = i < 4;
-    const m = new THREE.Mesh(geo, full ? new THREE.MeshStandardMaterial({ color: 0xff7a1a, emissive: 0xff4a12, emissiveIntensity: 1.2, metalness: 0.4, roughness: 0.3 })
-      : new THREE.MeshStandardMaterial({ color: 0x2a2d33, metalness: 0.6, roughness: 0.3, emissive: 0xff4a12, emissiveIntensity: 0.25 }));
+    const m = new THREE.Mesh(geo, full ? new THREE.MeshStandardMaterial({ color: 0xf29400, emissive: 0xf29400, emissiveIntensity: 0.9, metalness: 0.4, roughness: 0.3 })
+      : new THREE.MeshStandardMaterial({ color: 0x1d3557, metalness: 0.6, roughness: 0.3, emissive: 0xf29400, emissiveIntensity: 0.2 }));
     const a = (i - 2) * 0.32;
     m.position.set(Math.sin(a) * 6, Math.cos(a) * 1.2 - 1.2, Math.cos(a) * 1.5 - 1.5);
     g.add(m); stars.push(m);
   }
-  const l = new THREE.PointLight(0xff6a2b, 8, 14, 2); l.position.set(0, 1, 4); g.add(l);
-  g.position.y += 5.4;
+  const l = new THREE.PointLight(0xffffff, 6, 14, 2); l.position.set(0, 1, 4); g.add(l);
+  g.position.y += 4.4;
   g.scale.setScalar(0.8);
   scene.add(g);
   animated.push((t) => stars.forEach((s, i) => { s.rotation.y = Math.sin(t * 1.2 + i * 0.6) * 0.6; s.position.y = Math.cos((i - 2) * 0.32) * 1.2 - 1.2 + Math.sin(t * 1.5 + i) * 0.12; }));
@@ -419,7 +419,7 @@ const finalBar = makeBarbell(1.15);
 finalBar.position.copy(P[11]);
 scene.add(finalBar);
 {
-  const l = new THREE.PointLight(0xff4a12, 8, 12, 2); l.position.set(0, 2, 3); finalBar.add(l);
+  const l = new THREE.PointLight(0x2f8fd8, 9, 12, 2); l.position.set(0, 2, 3); finalBar.add(l);
 }
 animated.push((t) => { finalBar.rotation.y = t * 0.35; finalBar.position.y = P[11].y + Math.sin(t * 0.9) * 0.15; });
 
@@ -437,7 +437,7 @@ animated.push((t) => { finalBar.rotation.y = t * 0.35; finalBar.position.y = P[1
     const p = camCurve.getPointAt(u); camCurve.getTangentAt(u, tan);
     const q = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().lookAt(new THREE.Vector3(), tan, up));
     const W = 11, Hh = 7;
-    const col = i % 6 === 0 ? new THREE.Color(1.8, 0.45, 0.12) : i % 2 ? new THREE.Color(0.7, 1.0, 1.4) : new THREE.Color(1.15, 1.15, 1.25);
+    const col = i % 6 === 0 ? new THREE.Color(0.25, 0.75, 1.8) : i % 2 ? new THREE.Color(0.65, 1.0, 1.35) : new THREE.Color(1.2, 1.25, 1.35);
     const parts = [[0, Hh / 2, W, 0.05], [0, -Hh / 2, W, 0.05], [-W / 2, 0, 0.05, Hh], [W / 2, 0, 0.05, Hh]];
     for (const [x, y, sx, sy] of parts) {
       d.position.set(x, y, 0).applyQuaternion(q).add(p);
@@ -466,7 +466,7 @@ animated.push((t) => { finalBar.rotation.y = t * 0.35; finalBar.position.y = P[1
       void main(){ vec3 p = position; p.y += sin(uTime*0.3 + seed*30.0)*0.5; vS = seed;
         vec4 mv = modelViewMatrix * vec4(p,1.0); gl_PointSize = (1.0 + seed*2.2) * uPx * (20.0 / -mv.z); gl_Position = projectionMatrix * mv; }`,
     fragmentShader: `uniform sampler2D uMap; uniform float uTime; varying float vS;
-      void main(){ vec4 c = texture2D(uMap, gl_PointCoord); vec3 col = mix(vec3(1.0,0.45,0.15), vec3(0.55,0.8,1.0), step(0.55, vS));
+      void main(){ vec4 c = texture2D(uMap, gl_PointCoord); vec3 col = mix(vec3(0.3,0.65,1.0), vec3(0.9,0.95,1.0), step(0.55, vS));
         gl_FragColor = vec4(col, c.a * (0.3 + 0.3*sin(uTime + vS*40.0))); }`,
   });
   timeMats.push(mat);

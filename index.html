@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cut">
+<title>LUMBRA · Cinturón Lumbar Térmico</title>
+<meta name="description" content="LUMBRA — Cinturón lumbar térmico eléctrico con 3 niveles de calor, masaje por vibración, USB-C y temporizador. Desde 34,99€.">
+<meta name="theme-color" content="#07070b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+</head>
+<body>
+
+<!-- Loader -->
+<div id="loader" aria-hidden="true">
+  <div class="loader-core">
+    <svg viewBox="0 0 120 60" class="loader-coil"><path d="M10 45 V15 H30 V45 H50 V15 H70 V45 H90 V15 H110 V45" /></svg>
+    <div class="loader-txt">CALENTANDO <span id="loadPct">0</span>%</div>
+  </div>
+</div>
+
+<canvas id="webgl"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+
+<!-- Nav -->
+<header class="nav">
+  <a href="#hero" class="logo"><span class="logo-mark"></span>LUMBRA</a>
+  <nav class="nav-links">
+    <a href="#calor">Calor</a>
+    <a href="#masaje">Masaje</a>
+    <a href="#libertad">USB-C</a>
+    <a href="#packs">Packs</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a href="#packs" class="btn btn-sm">Comprar · 34,99€</a>
+</header>
+
+<!-- Scene progress rail -->
+<aside class="rail" aria-hidden="true">
+  <div class="rail-track"><div class="rail-fill" id="railFill"></div></div>
+  <div class="rail-label"><span id="railNum">01</span> / <span id="railTotal">10</span></div>
+</aside>
+
+<main id="content">
+
+  <!-- 01 HERO -->
+  <section class="scene" id="hero" data-scene="0">
+    <div class="panel left hero-panel">
+      <p class="eyebrow"><span class="dot"></span> Cinturón lumbar térmico eléctrico</p>
+      <h1 class="title">El calor que tu espalda <em>estaba esperando.</em></h1>
+      <p class="lead">Calor envolvente, masaje por vibración y libertad USB-C en un cinturón ligero que llevas debajo de la ropa. En casa, en el trabajo o en el sofá.</p>
+      <div class="hero-cta">
+        <a href="#packs" class="btn">Lo quiero · 34,99€</a>
+        <a href="#calor" class="btn btn-ghost">Descubrir ↓</a>
+      </div>
+      <ul class="trust">
+        <li>🚚 Envío gratis</li>
+        <li>💶 Pago contra reembolso</li>
+        <li>↩️ 30 días de devolución</li>
+      </ul>
+    </div>
+    <div class="scroll-hint"><span></span>Haz scroll</div>
+  </section>
+
+  <!-- 02 CALOR -->
+  <section class="scene" id="calor" data-scene="1">
+    <div class="panel right">
+      <p class="eyebrow">01 — Calor envolvente</p>
+      <h2 class="title">Una resistencia de calor que abraza <em>toda la zona lumbar.</em></h2>
+      <p class="lead">El circuito térmico en zigzag reparte el calor de forma uniforme por la parte baja de la espalda. Lo notas en segundos — como una manta caliente que se queda justo donde la necesitas.</p>
+      <div class="stats">
+        <div><b>360°</b><span>Ajuste a la cintura</span></div>
+        <div><b>Segundos</b><span>Para sentir el calor</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 NIVELES -->
+  <section class="scene" id="niveles" data-scene="2">
+    <div class="panel left">
+      <p class="eyebrow">02 — Tú decides</p>
+      <h2 class="title">Tres niveles de temperatura. <em>Un solo botón.</em></h2>
+      <p class="lead">Pulsa y cambia de intensidad cuando quieras.</p>
+      <div class="levels">
+        <div class="level l1"><i></i><b>Suave</b><span>Para llevarlo horas</span></div>
+        <div class="level l2"><i></i><b>Medio</b><span>El favorito del día a día</span></div>
+        <div class="level l3"><i></i><b>Intenso</b><span>Para los días de frío</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 MASAJE -->
+  <section class="scene" id="masaje" data-scene="3">
+    <div class="panel right">
+      <p class="eyebrow">03 — Vibración</p>
+      <h2 class="title">Masaje por vibración <em>mientras te relajas.</em></h2>
+      <p class="lead">Combina el calor con un masaje vibratorio suave que relaja y reconforta. Actívalo junto al calor o por separado — es tu momento de desconexión.</p>
+      <div class="chips"><span>Calor</span><span>+</span><span>Vibración</span><span>=</span><span class="hot">Relax total</span></div>
+    </div>
+  </section>
+
+  <!-- 05 USB-C -->
+  <section class="scene" id="libertad" data-scene="4">
+    <div class="panel left">
+      <p class="eyebrow">04 — Libertad USB-C</p>
+      <h2 class="title">Sin enchufes. <em>Sin ataduras.</em></h2>
+      <p class="lead">Conéctalo a cualquier power bank por USB-C, guárdalo en el bolsillo del cinturón y muévete con libertad: cocinando, en la oficina, en el coche o paseando.</p>
+      <ul class="ticks">
+        <li>Conector USB-C universal</li>
+        <li>Bolsillo integrado para la batería</li>
+        <li>Ligero y discreto bajo la ropa</li>
+      </ul>
+      <p class="fine">*Power bank no incluida.</p>
+    </div>
+  </section>
+
+  <!-- 06 SEGURIDAD -->
+  <section class="scene" id="seguridad" data-scene="5">
+    <div class="panel right">
+      <p class="eyebrow">05 — Tranquilidad</p>
+      <h2 class="title">Temporizador y protección <em>integrados.</em></h2>
+      <p class="lead">Función de temporizador con apagado automático y protección de seguridad. Relájate, cierra los ojos — el cinturón se encarga del resto.</p>
+      <div class="stats">
+        <div><b>Auto-off</b><span>Temporizador integrado</span></div>
+        <div><b>Neopreno</b><span>Cómodo y transpirable</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 REAL -->
+  <section class="scene" id="real" data-scene="6">
+    <div class="panel wide">
+      <p class="eyebrow">06 — Así es en la vida real</p>
+      <h2 class="title">Diseñado para <em>llevarlo puesto.</em></h2>
+      <div class="gallery">
+        <figure class="g-main"><img src="assets/producto.jpg" alt="Caja del cinturón lumbar térmico con fotos del producto puesto" loading="lazy"></figure>
+        <figure><img src="assets/espalda.jpg" alt="Cinturón térmico encendido en la zona lumbar" loading="lazy"><figcaption>Calor en la zona lumbar</figcaption></figure>
+        <figure><img src="assets/control.jpg" alt="Mando de control con dos botones" loading="lazy"><figcaption>Control de 2 botones</figcaption></figure>
+        <figure><img src="assets/detalle.jpg" alt="Cinturón conectado por USB-C" loading="lazy"><figcaption>USB-C + bolsillo</figcaption></figure>
+      </div>
+      <div class="features">
+        <div><i>🔥</i>3 niveles de calor</div>
+        <div><i>〰️</i>Masaje vibratorio</div>
+        <div><i>⚡</i>Conector USB-C</div>
+        <div><i>⏱️</i>Temporizador</div>
+        <div><i>🛡️</i>Protección de seguridad</div>
+        <div><i>🌬️</i>Transpirable</div>
+        <div><i>🧷</i>Cierre de velcro ajustable</div>
+        <div><i>❄️</i>Te protege del frío</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 PACKS -->
+  <section class="scene scene-tall" id="packs" data-scene="7">
+    <div class="panel wide">
+      <p class="eyebrow center">07 — Elige tu pack</p>
+      <h2 class="title center">Más calor, <em>menos precio por unidad.</em></h2>
+      <p class="lead center">Ideal para compartir en casa o para regalar. Envío gratis y pago contra reembolso en todos los packs.</p>
+      <div class="packs">
+        <article class="pack" data-pack="1">
+          <div class="pack-glow"></div>
+          <p class="pack-name">Individual</p>
+          <p class="pack-qty">1 cinturón</p>
+          <div class="pack-price"><b>34,99€</b></div>
+          <p class="pack-unit">34,99€ / unidad</p>
+          <ul>
+            <li>Cinturón lumbar térmico</li>
+            <li>Cable USB-C</li>
+            <li>Envío gratis</li>
+          </ul>
+          <button class="btn btn-ghost buy" data-pack="1">Elegir Individual</button>
+        </article>
+        <article class="pack featured" data-pack="2">
+          <div class="pack-glow"></div>
+          <span class="badge">Recomendado</span>
+          <p class="pack-name">Pack Dúo</p>
+          <p class="pack-qty">2 cinturones</p>
+          <div class="pack-price"><s>69,98€</s><b>59,99€</b></div>
+          <p class="pack-unit">29,99€ / unidad · <span class="save">Ahorras 9,99€</span></p>
+          <ul>
+            <li>2 cinturones lumbares térmicos</li>
+            <li>2 cables USB-C</li>
+            <li>Uno para ti, otro para regalar</li>
+            <li>Envío gratis prioritario</li>
+          </ul>
+          <button class="btn buy" data-pack="2">Elegir Pack Dúo</button>
+        </article>
+        <article class="pack" data-pack="3">
+          <div class="pack-glow"></div>
+          <span class="badge badge-alt">Mejor precio</span>
+          <p class="pack-name">Pack Familia</p>
+          <p class="pack-qty">3 cinturones</p>
+          <div class="pack-price"><s>104,97€</s><b>79,99€</b></div>
+          <p class="pack-unit">26,66€ / unidad · <span class="save">Ahorras 24,98€</span></p>
+          <ul>
+            <li>3 cinturones lumbares térmicos</li>
+            <li>3 cables USB-C</li>
+            <li>Para toda la familia</li>
+            <li>Envío gratis prioritario</li>
+          </ul>
+          <button class="btn btn-ghost buy" data-pack="3">Elegir Pack Familia</button>
+        </article>
+      </div>
+      <div class="guarantee">
+        <div>💶<b>Pagas al recibir</b><span>Contra reembolso, sin tarjeta</span></div>
+        <div>🚚<b>Envío gratis</b><span>A toda la península</span></div>
+        <div>↩️<b>30 días</b><span>Devolución sin complicaciones</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 REGALO -->
+  <section class="scene" id="regalo" data-scene="8">
+    <div class="panel left">
+      <p class="eyebrow">08 — El regalo perfecto</p>
+      <h2 class="title">Regala calor <em>a quien más quieres.</em></h2>
+      <p class="lead">Para tus padres, tu pareja o ese amigo que pasa el día de pie o sentado frente al ordenador. Un detalle útil que van a usar cada día de invierno.</p>
+      <a href="#packs" class="btn">Ver Pack Dúo · 59,99€</a>
+    </div>
+  </section>
+
+  <!-- 10 FAQ -->
+  <section class="scene scene-tall" id="faq" data-scene="9">
+    <div class="panel wide narrow">
+      <p class="eyebrow center">Preguntas frecuentes</p>
+      <h2 class="title center">Todo lo que <em>necesitas saber.</em></h2>
+      <div class="faq">
+        <details><summary>¿Cómo funciona el pago contra reembolso?</summary><p>Haces el pedido sin pagar nada online. Cuando el repartidor te entrega el paquete, pagas en ese momento. Así de fácil.</p></details>
+        <details><summary>¿Necesito enchufarlo a la pared?</summary><p>No es necesario. Funciona por USB-C: puedes conectarlo a una power bank (no incluida) y guardarla en el bolsillo del cinturón, o a un cargador USB.</p></details>
+        <details><summary>¿Se puede usar debajo de la ropa?</summary><p>Sí. Es ligero, de neopreno transpirable y se ajusta con velcro, así que queda discreto bajo una camiseta o un jersey.</p></details>
+        <details><summary>¿Puedo usar el calor y la vibración a la vez?</summary><p>Sí. El mando tiene dos botones: uno para el calor (3 niveles) y otro para la vibración. Puedes usarlos juntos o por separado.</p></details>
+        <details><summary>¿Se apaga solo?</summary><p>Sí, incluye función de temporizador con apagado automático y protección de seguridad.</p></details>
+        <details><summary>¿Le vale a cualquier talla?</summary><p>El cierre de velcro permite ajustarlo a la mayoría de contornos de cintura.</p></details>
+        <details><summary>¿Y si no me convence?</summary><p>Tienes 30 días para devolverlo. Escríbenos y te ayudamos con el proceso.</p></details>
+      </div>
+      <div class="final-cta">
+        <h3>Tu espalda te lo va a agradecer.</h3>
+        <a href="#packs" class="btn">Elegir mi pack</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="logo"><span class="logo-mark"></span>LUMBRA</div>
+    <p class="disclaimer">LUMBRA es un producto de bienestar diseñado para aportar calor y confort. No es un dispositivo médico ni sustituye el consejo de un profesional sanitario. No usar mientras se duerme. Consulta a tu médico si estás embarazada, tienes problemas de sensibilidad en la piel o llevas un dispositivo médico implantado.</p>
+    <nav><a href="#">Aviso legal</a><a href="#">Privacidad</a><a href="#">Envíos y devoluciones</a><a href="#">Contacto</a></nav>
+    <p class="copy">© 2026 LUMBRA</p>
+  </footer>
+</main>
+
+<!-- Sticky mobile buy bar -->
+<div class="buybar" id="buybar">
+  <div><b>Cinturón Lumbar Térmico</b><span>Desde 34,99€ · Envío gratis</span></div>
+  <a href="#packs" class="btn btn-sm">Comprar</a>
+</div>
+
+<!-- Checkout modal -->
+<div class="modal" id="modal" aria-hidden="true">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button class="modal-x" data-close aria-label="Cerrar">✕</button>
+    <div id="orderForm">
+      <p class="eyebrow">Pago contra reembolso</p>
+      <h3 id="mTitle">Completa tu pedido</h3>
+      <div class="m-packs" id="mPacks"></div>
+      <form id="form">
+        <div class="row"><label>Nombre y apellidos<input name="nombre" required autocomplete="name"></label></div>
+        <div class="row"><label>Teléfono<input name="telefono" type="tel" required autocomplete="tel" pattern="[0-9 +]{9,15}"></label></div>
+        <div class="row"><label>Dirección<input name="direccion" required autocomplete="street-address"></label></div>
+        <div class="row two">
+          <label>Ciudad<input name="ciudad" required autocomplete="address-level2"></label>
+          <label>C. Postal<input name="cp" required inputmode="numeric" pattern="[0-9]{5}" autocomplete="postal-code"></label>
+        </div>
+        <div class="m-total"><span>Total a pagar al recibir</span><b id="mTotal">34,99€</b></div>
+        <button class="btn btn-block" type="submit">Confirmar pedido</button>
+        <p class="fine center">Envío gratis · Pagas cuando lo recibes</p>
+      </form>
+    </div>
+    <div id="orderOk" hidden>
+      <div class="ok-icon">✓</div>
+      <h3>¡Pedido recibido!</h3>
+      <p class="lead">Te llamaremos para confirmar el envío. Pagarás al recibirlo.</p>
+      <button class="btn" data-close>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="ui.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grandgym · Gimnasio en Burgos</title>
+<meta name="description" content="Grandgym, Gimnasio Grandmontagne. Gimnasio en Burgos con equipamiento premium: más de 2800 m², piscina, clases colectivas, musculación Panatta y Eleiko, centro de estética y Club de Judo. Desde 1983.">
+<meta name="theme-color" content="#050608">
+<link rel="icon" href="img/logo-color.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+</head>
+<body>
+
+<!-- Preloader: 1983 → hoy -->
+<div id="loader" aria-hidden="true">
+  <div class="ld-inner">
+    <img src="img/logo-blanco.png" alt="" class="ld-logo">
+    <div class="ld-year"><span id="ldYear">1983</span></div>
+    <div class="ld-bar"><i id="ldBar"></i></div>
+    <p class="ld-txt">Cargando más de 40 años de deporte en Burgos</p>
+  </div>
+</div>
+
+<canvas id="webgl"></canvas>
+<div class="scan" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<!-- Promo -->
+<a class="promo" href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener">
+  <span>Black Friday 💣 Matrícula GRATIS</span><b>Apúntate →</b>
+</a>
+
+<header class="nav" id="nav">
+  <a href="#inicio" class="brand" aria-label="Grandgym, inicio"><img src="img/logo-blanco.png" alt="Grandgym · Gimnasio Grandmontagne"></a>
+  <nav class="links" aria-label="Principal">
+    <a href="#centro">Centro</a>
+    <a href="#actividades">Actividades</a>
+    <a href="#horario">Horario</a>
+    <a href="#precios">Precios</a>
+    <a href="#estetica">Estética</a>
+    <a href="#judo">Judo</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+  <div class="nav-right">
+    <span class="live" id="liveStatus"><i></i><span>Horario</span></span>
+    <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn btn-sm magnetic">Apúntate</a>
+    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mmenu" id="mmenu">
+  <a href="#centro">Centro</a><a href="#actividades">Actividades</a><a href="#horario">Horario</a><a href="#precios">Precios</a><a href="#estetica">Estética</a><a href="#judo">Judo</a><a href="#contacto">Contacto</a>
+  <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn">Apúntate</a>
+</div>
+
+<aside class="hud" aria-hidden="true">
+  <div class="hud-num"><span id="hudNum">00</span><small>/ <span id="hudTot">00</span></small></div>
+  <div class="hud-track"><i id="hudFill"></i></div>
+  <div class="hud-label" id="hudLabel">Inicio</div>
+</aside>
+
+<main id="content">
+
+  <!-- 00 INICIO -->
+  <section class="scene" id="inicio" data-scene="0" data-label="Inicio">
+    <div class="panel hero">
+      <p class="eyebrow"><i class="pulse"></i>Gimnasio en Burgos</p>
+      <h1 class="mega"><span class="line"><span>Vas a</span></span><span class="line"><span class="grad">sentirte</span></span><span class="line"><span>bien</span></span></h1>
+      <p class="lead">Descubre el gimnasio líder de la ciudad: instalaciones de última generación, equipamiento premium y espacios diseñados para potenciar tu rendimiento. ¡Entrena al máximo en el mejor ambiente fitness!</p>
+      <div class="cta-row">
+        <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn magnetic">Apúntate</a>
+        <button class="btn btn-ghost magnetic" data-open-trial>Prueba 1 día gratis</button>
+      </div>
+      <dl class="kpis">
+        <div><dt>Desde</dt><dd data-count="1983" data-plain>1983</dd></div>
+        <div><dt>m² de instalaciones</dt><dd>+<span data-count="2800">2800</span></dd></div>
+        <div><dt>Reseñas en Google</dt><dd>+<span data-count="450">450</span></dd></div>
+        <div><dt>Valoración</dt><dd>4,3<small>★</small></dd></div>
+      </dl>
+    </div>
+    <div class="scroll-cue"><span></span>Scroll</div>
+  </section>
+
+  <!-- Marquee -->
+  <div class="marquee" aria-label="Actividades">
+    <div class="mq-track">
+      <span>Body</span><span>Judo</span><span>Zumba</span><span>Planes especiales</span><span>Ciclo</span><span>Yoga</span><span>Centro de estética</span><span>Natación</span><span>Pilates</span><span>Gimnasia rítmica</span><span>TRX</span><span>Aquagym</span>
+      <span>Body</span><span>Judo</span><span>Zumba</span><span>Planes especiales</span><span>Ciclo</span><span>Yoga</span><span>Centro de estética</span><span>Natación</span><span>Pilates</span><span>Gimnasia rítmica</span><span>TRX</span><span>Aquagym</span>
+    </div>
+  </div>
+
+  <!-- 01 CENTRO -->
+  <section class="scene" id="centro" data-scene="1" data-label="Centro">
+    <div class="panel right">
+      <p class="eyebrow">Instalaciones</p>
+      <h2 class="title">Uno de los centros urbanos <span class="grad">más grandes de España</span></h2>
+      <p class="lead">Desde 1983 participando activamente en la apasionante evolución de las actividades deportivas.</p>
+      <p class="body">Con más de 2800 m² de instalaciones deportivas, somos el gimnasio en Burgos “bajo edificio” más grande de toda la provincia y uno de los más grandes de España.</p>
+      <p class="body">Desde el principio hemos creído en unas instalaciones capaces de acoger a <b>TODA LA FAMILIA</b>.</p>
+      <div class="chips">
+        <span>Piscina</span><span>Sauna de vapor</span><span>Sala fitness</span><span>Peso libre</span><span>Cardio</span><span>Funcional</span><span>Zona de boxing</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 PANATTA -->
+  <section class="scene" id="panatta" data-scene="2" data-label="Nueva zona">
+    <div class="panel left">
+      <p class="eyebrow"><i class="tag">Nuevo</i>Zona de musculación guiada</p>
+      <h2 class="title">Maquinaria <span class="grad">Panatta.</span> Exclusiva en Burgos.</h2>
+      <p class="body">En Grandgym hemos renovado por completo nuestra sala de musculación guiada con maquinaria Panatta, la prestigiosa marca italiana referente en diseño, biomecánica y alto rendimiento.</p>
+      <p class="body">Una mejora integral pensada para ofrecerte un entrenamiento más cómodo, preciso y eficaz, con equipamiento premium exclusivo en Burgos.</p>
+      <p class="lead strong">Más calidad, más innovación y una nueva experiencia de entrenamiento para seguir avanzando contigo.</p>
+      <div class="photo-pair">
+        <figure class="tilt"><img src="img/panatta-logo.jpg" alt="Zona Panatta en Grandgym" loading="lazy"></figure>
+        <figure class="tilt"><img src="img/panatta-1.jpg" alt="Máquina Panatta en la sala de musculación" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 GALERIA (scroll horizontal) -->
+  <section class="hgallery" id="galeria" data-scene="3" data-label="Galería">
+    <div class="hg-sticky">
+      <div class="hg-head">
+        <p class="eyebrow">Entra en Grandgym</p>
+        <h2 class="title">Así se entrena <span class="grad">aquí.</span></h2>
+      </div>
+      <div class="hg-track" id="hgTrack">
+        <figure><img src="img/sala-led.jpg" alt="Sala de entrenamiento con iluminación LED" loading="lazy"><figcaption>Sala fitness</figcaption></figure>
+        <figure class="wide"><img src="img/funcional-rojo.jpg" alt="Zona funcional con luz roja" loading="lazy"><figcaption>Funcional</figcaption></figure>
+        <figure><img src="img/eleiko-zona.jpg" alt="Zona Eleiko" loading="lazy"><figcaption>Zona Eleiko</figcaption></figure>
+        <figure><img src="img/boxing-rojo.jpg" alt="Zona de boxing" loading="lazy"><figcaption>Zona de boxing</figcaption></figure>
+        <figure><img src="img/rack-eleiko.jpg" alt="Rack con discos Eleiko" loading="lazy"><figcaption>Peso libre</figcaption></figure>
+        <figure><img src="img/ciclo-sala.jpg" alt="Sala de ciclo indoor" loading="lazy"><figcaption>Ciclo indoor</figcaption></figure>
+        <figure><img src="img/cardio-azul.jpg" alt="Zona de cardio" loading="lazy"><figcaption>Cardio</figcaption></figure>
+        <figure><img src="img/sala-ambar.jpg" alt="Sala de musculación" loading="lazy"><figcaption>Musculación</figcaption></figure>
+        <figure><img src="img/eleiko-racks.jpg" alt="Racks Eleiko iluminados" loading="lazy"><figcaption>Racks Eleiko</figcaption></figure>
+        <figure class="wide"><img src="img/recepcion.jpg" alt="Recepción de Grandgym" loading="lazy"><figcaption>Recepción</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 ACTIVIDADES -->
+  <section class="scene scene-tall" id="actividades" data-scene="4" data-label="Actividades">
+    <div class="panel wide">
+      <p class="eyebrow center">Actividades</p>
+      <h2 class="title center">Planes para todos. <span class="grad">Profesionales del deporte.</span></h2>
+      <div class="acts">
+        <article class="act tilt" style="--h:12">
+          <span class="act-k">Adultos</span>
+          <h3>Clases colectivas</h3>
+          <p>Body Pump · Body Pump HEAVY · Body Combat · Body Balance · Zumba · Ciclo · Pilates · HBX Boxing · HBX Round · Core · Cross Training · TRX · Circuit · Streching · Fuerza Senior · Gym Senior · Gim TBC · Kung Fu · Twerk</p>
+          <a href="#horario" class="act-link">Ver horario →</a>
+        </article>
+        <article class="act tilt" style="--h:200">
+          <span class="act-k">Infantil</span>
+          <h3>Natación, judo y más</h3>
+          <p>Natación Agua patos · Nat. Ranitas · Nat. Escolar · Nat. Regular · Nat. Rendimiento · Salvamento y socorrismo acuático · Judo por categorías · Rítmica · Zumba kids</p>
+          <a href="#horario" class="act-link" data-tab="infantil">Ver horario infantil →</a>
+        </article>
+        <article class="act tilt" style="--h:28">
+          <span class="act-k">Planes Quality</span>
+          <h3>Actividades Quality</h3>
+          <p>Todo lo que necesitas para mejorar tu calidad de vida.</p>
+          <a href="https://grandmontagne.es/actividades/quality/planes/" target="_blank" rel="noopener" class="act-link">Ver planes quality →</a>
+        </article>
+        <article class="act tilt" style="--h:330">
+          <span class="act-k">Salud y belleza</span>
+          <h3>Centro de estética</h3>
+          <p>Depilación láser de diodo, tratamientos corporales y faciales, masajes y circuito SPA.</p>
+          <a href="#estetica" class="act-link">Ver tratamientos →</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 PISCINA -->
+  <section class="scene" id="piscina" data-scene="5" data-label="Piscina">
+    <div class="panel right">
+      <p class="eyebrow">Agua</p>
+      <h2 class="title">Natación, aquagym <span class="grad">y sauna.</span></h2>
+      <p class="body">Acceso libre a piscina* y sauna (baño) de vapor (60º aprox.) incluidos en todas las tarifas. Cursos de natación para todas las edades, desde Agua patos hasta Rendimiento, y salvamento y socorrismo acuático.</p>
+      <ul class="ticks">
+        <li>Acceso libre a piscina*</li>
+        <li>Sauna (baño) de vapor (60º aprox.)</li>
+        <li>Natación infantil por niveles</li>
+        <li>Aquagym</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 06 HORARIO -->
+  <section class="scene scene-tall" id="horario" data-scene="6" data-label="Horario">
+    <div class="panel wide">
+      <div class="hz-head">
+        <div>
+          <p class="eyebrow">Horario actividades</p>
+          <h2 class="title">¿Qué clase <span class="grad">toca hoy?</span></h2>
+        </div>
+        <div class="open-card">
+          <p class="eyebrow">Apertura de instalaciones</p>
+          <ul>
+            <li data-d="1-5"><span>L-V</span><b>7:00h a 23:30h</b></li>
+            <li data-d="6"><span>S</span><b>9:00h a 20:00h</b></li>
+            <li data-d="0"><span>D</span><b>9:00h a 14:00h</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="hz-controls">
+        <div class="seg" role="tablist" aria-label="Horario">
+          <button role="tab" class="on" data-group="adultos" aria-selected="true">Adultos</button>
+          <button role="tab" data-group="infantil" aria-selected="false">Infantil</button>
+        </div>
+        <div class="days" id="days" role="tablist" aria-label="Día"></div>
+      </div>
+      <ol class="classes" id="classes" aria-live="polite"></ol>
+    </div>
+  </section>
+
+  <!-- 07 PRECIOS -->
+  <section class="scene scene-tall" id="precios" data-scene="7" data-label="Precios">
+    <div class="panel wide">
+      <p class="eyebrow center">Tarifas y ofertas</p>
+      <h2 class="title center">Apúntate a <span class="grad">Grandgym.</span></h2>
+      <div class="seg center-seg" role="tablist" aria-label="Duración">
+        <button role="tab" class="on" data-term="a" aria-selected="true">Anual</button>
+        <button role="tab" data-term="t" aria-selected="false">3 meses</button>
+        <button role="tab" data-term="m" aria-selected="false">1 mes</button>
+      </div>
+      <div class="prices">
+        <article class="price featured">
+          <span class="p-badge">Todo incluido</span>
+          <h3>Tarifa Premium</h3>
+          <p class="p-sub">Incluye todas las clases colectivas</p>
+          <div class="p-amt" data-a="36,72" data-t="43,61" data-m="45,90"><b>36,72</b><span>€/mes</span></div>
+          <p class="p-extra" data-a="Cuotas aplazadas · Contrato anual · Sin compromiso de permanencia · Matrícula gratis" data-t="3 meses · 43,61 €/mes (-5%) + matrícula 10€" data-m="1 mes · 45,90 € + matrícula 20€">Cuotas aplazadas · Contrato anual · Sin compromiso de permanencia · Matrícula gratis</p>
+          <p class="p-desc">Todas las clases, las mejores coreografías, programas líderes, a cualquier día y hora.</p>
+          <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn magnetic">Apúntame</a>
+        </article>
+        <article class="price">
+          <h3>Tarifa Fitness</h3>
+          <p class="p-sub">Sin clases colectivas</p>
+          <div class="p-amt" data-a="31,04" data-t="36,86" data-m="38,80"><b>31,04</b><span>€/mes</span></div>
+          <p class="p-extra" data-a="Cuotas aplazadas · Contrato anual · Sin compromiso de permanencia · Matrícula gratis" data-t="3 meses · 36,86 €/mes (-5%) + matrícula 10€" data-m="1 mes · 38,80 € + matrícula 20€">Cuotas aplazadas · Contrato anual · Sin compromiso de permanencia · Matrícula gratis</p>
+          <p class="p-desc">Accede a las mejores salas del mercado para un entrenamiento integral.</p>
+          <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn btn-ghost magnetic">Apúntame</a>
+        </article>
+        <article class="price">
+          <h3>Tarifa Premium 9</h3>
+          <p class="p-sub">9 días al mes</p>
+          <div class="p-amt" data-a="30,24" data-t="35,91" data-m="37,80"><b>30,24</b><span>€/mes</span></div>
+          <p class="p-extra" data-a="Contrato anual" data-t="3 meses · 35,91 €/mes (-5%)" data-m="1 mes · 37,80 €">Contrato anual</p>
+          <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn btn-ghost magnetic">Apúntame</a>
+        </article>
+        <article class="price">
+          <h3>Tarifa Premium 5</h3>
+          <p class="p-sub">5 días al mes</p>
+          <div class="p-amt" data-a="22,32" data-t="26,51" data-m="27,90"><b>22,32</b><span>€/mes</span></div>
+          <p class="p-extra" data-a="Contrato anual" data-t="3 meses · 26,51 €/mes (-5%)" data-m="1 mes · 27,90 €/mes">Contrato anual</p>
+          <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn btn-ghost magnetic">Apúntame</a>
+        </article>
+      </div>
+      <div class="includes">
+        <h3>Todas nuestras tarifas incluyen</h3>
+        <ul>
+          <li>Rutina personalizada</li><li>Programa de dieta</li><li>App de entrenamiento</li><li>Acceso libre a piscina*</li>
+          <li>Sauna (baño) de vapor (60º aprox.)</li><li>Sala de entrenamiento fitness</li><li>Salas de peso libre y musculación</li><li>Sala de entrenamiento cardio</li>
+          <li>Sala de entrenamiento funcional</li><li>Zona de boxing</li><li>Acceso todos los días y a cualquier hora</li><li>Taquilla diaria</li><li>Clases virtuales y mucho más</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 ESTETICA -->
+  <section class="scene scene-tall" id="estetica" data-scene="8" data-label="Estética">
+    <div class="panel wide">
+      <p class="eyebrow">Salud y belleza · Centro de estética</p>
+      <h2 class="title">Depilación láser de diodo. <span class="grad">¡Dile adiós al vello de forma definitiva!</span></h2>
+      <p class="body max">La depilación láser de diodo es el tratamiento más eficaz para eliminar el vello de forma permanente. Con nuestro equipo de última generación, podrás olvidarte del vello en las zonas que más te preocupan: piernas, axilas, brazos, espalda, etc.</p>
+      <div class="treat">
+        <div><b>Depilación a cera</b><span>Piernas completas, cejas, axilas, ingles, labios...</span></div>
+        <div><b>Cavitación</b><span>Reduce la grasa localizada. Indolora, sin anestesia y muy efectiva</span></div>
+        <div><b>Electroestimulación</b><span>Trabajo muscular localizado a alta intensidad</span></div>
+        <div><b>Radiofrecuencia corporal</b><span>Combate la flacidez del cuerpo. Ayuda a eliminar la celulitis</span></div>
+        <div><b>Presoterapia</b><span>Permite un mayor drenaje linfático que ayuda a tonificar y a estimular los músculos</span></div>
+        <div><b>Masajes</b><span>Relajante, remodelante, circulatorio</span></div>
+        <div><b>Radiofrecuencia facial</b><span>Combate la flacidez facial</span></div>
+        <div><b>Circuito SPA</b><span>Relájate en nuestro spa</span></div>
+        <div><b>Manicura o pedicura</b><span>Normal y decorativa</span></div>
+        <div><b>Vendas frías</b><span>Reduce la tª corporal de tu organismo y aumenta el metabolismo</span></div>
+        <div><b>Envolturas</b><span>Todo tipo de envolturas para cuidar tu piel</span></div>
+        <div><b>Exfoliación</b><span>Elimina toxinas de tu rostro y de tu cuerpo y luce una imagen 10</span></div>
+      </div>
+      <h3 class="sub">Bonos de sesiones</h3>
+      <div class="bonos">
+        <div class="bono oro"><span>Bono ORO</span><b>192<small>,00€</small></b><em>20 sesiones</em></div>
+        <div class="bono plata"><span>Bono PLATA</span><b>149<small>,50€</small></b><em>14 sesiones</em></div>
+        <div class="bono bronce"><span>Bono BRONCE</span><b>98<small>,00€</small></b><em>8 sesiones</em></div>
+      </div>
+      <p class="fine">Puedes adquirir cuantos bonos desees y realizar un máximo de 3 sesiones de cada tratamiento, independientemente de los bonos que saques. Sólo 3 sesiones por persona y tratamiento en la misma temporada.</p>
+    </div>
+  </section>
+
+  <!-- 09 JUDO -->
+  <section class="scene scene-tall" id="judo" data-scene="9" data-label="Club Judo">
+    <div class="panel left">
+      <p class="eyebrow">Club Judo Grandmontagne</p>
+      <h2 class="title">Todo lo que <span class="grad">te propongas.</span></h2>
+      <ol class="news">
+        <li><time>9 nov 2026</time>Román Martín, ORO en el “Villa de Avilés” se coloca segundo en el Ranking Nacional</li>
+        <li><time>16 oct 2026</time>El judo Club Grandmontagne domina el Trofeo Internacional “Vicente Zarza”</li>
+        <li><time>14 oct 2026</time>Daniel Maté, Subcampeón infantil en la Supercopa de Cantabria</li>
+        <li><time>28 abr 2026</time>Rubén Diéz, BRONCE en el Campeonato de España Infantil</li>
+        <li><time>16 abr 2026</time>Roberto González, Campeón en Tomelloso</li>
+        <li><time>26 mar 2026</time>4 medallas para el Grandmontagne en el Internacional Junior de Valladolid</li>
+      </ol>
+      <a href="https://grandmontagne.es/judo/judo-club/" target="_blank" rel="noopener" class="btn btn-ghost magnetic">Noticias del club</a>
+    </div>
+  </section>
+
+  <!-- 10 RESEÑAS -->
+  <section class="scene" id="resenas" data-scene="10" data-label="Reseñas">
+    <div class="panel wide">
+      <div class="rating">
+        <b>4,3</b>
+        <div><span class="stars" style="--r:4.3" aria-label="4,3 de 5"></span><p>¡Más de 450 reseñas en Google!</p></div>
+      </div>
+      <div class="reviews">
+        <div class="rv-track">
+          <blockquote><p>Buen gimnasio, instalaciones reformadas recientemente y me pilla cerca de casa. El horario que tiene me parece muy bueno.</p><cite>Mario</cite></blockquote>
+          <blockquote><p>Es un gran gimnasio, muy seguro, limpio, barato y con muy buenos profesionales, por añadir un pero no se debe ir en coche pues no suele haber aparcamiento cerca.</p><cite>Octavio</cite></blockquote>
+          <blockquote><p>Son muy amables y han tenido muy trato conmigo siempre, sus instalaciones están impecables, mucha variedad de clases y tienen muy buenos precios. Lo recomiendo</p><cite>Victoria</cite></blockquote>
+          <blockquote><p>El primer día de piscina y todo genial, muchas gracias por todo como siempre muy bien</p><cite>Diego</cite></blockquote>
+          <blockquote><p>Lo tiene todo. Monitores estupendos, buenas instalaciones, buen ambiente. Muy profesionales y cercanos al cliente.</p><cite>Ana</cite></blockquote>
+          <blockquote><p>Sitio genial, gran ambiente sobre todo en el ciclo indoor. Monitores muy profesionales!!</p><cite>Francisco</cite></blockquote>
+          <blockquote><p>Gimnasio con buena ubicación dentro de Burgos. Las instalaciones son amplias y aunque pueden parecer un tanto laberínticas, dispone de gran cantidad de salas. Ofrece servicios para todas las edades y dispone de un pase de día gratuito para que pruebes las instalaciones.</p><cite>Javi G.Verdeja</cite></blockquote>
+          <blockquote><p>Muy buenas clases de bici. Chema es un super monitor. Instalaciones muy limpias y bien cuidadas. Todo genial.</p><cite>Ana Ioan Ioan</cite></blockquote>
+          <blockquote><p>Completo y muy diverso.. Gim de toda la vida..y los monitores y recepción de 10. Ahora están cambiando maquinaria nueva ,,Siempre a la última</p><cite>Jose Javier García Busto</cite></blockquote>
+          <blockquote><p>Muy recomendable. Trato muy amable. Doy un 10 a las chicas de recepción.</p><cite>Rocío CR</cite></blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 CTA + CONTACTO -->
+  <section class="scene scene-tall" id="contacto" data-scene="11" data-label="Contacto">
+    <div class="panel wide">
+      <div class="final">
+        <h2 class="mega small"><span class="line"><span>¿Estás preparado</span></span><span class="line"><span class="grad">para ponerte en forma?</span></span></h2>
+        <div class="cta-row center">
+          <a href="https://grandmontagne.es/apuntate/" target="_blank" rel="noopener" class="btn magnetic">Apúntate</a>
+          <button class="btn btn-ghost magnetic" data-open-trial>Prueba 1 día</button>
+        </div>
+      </div>
+      <div class="contact">
+        <div class="c-card">
+          <p class="eyebrow">Dónde estamos</p>
+          <p class="c-big">C/ Francisco Grandmontagne Nº13<br>09007 Burgos</p>
+          <a href="https://goo.gl/maps/K39uYirxyL7Ptx9W7" target="_blank" rel="noopener" class="act-link">Cómo llegar →</a>
+        </div>
+        <div class="c-card">
+          <p class="eyebrow">Contacto</p>
+          <p class="c-row"><span>Teléfono</span><a href="tel:+34947228654">947 22 86 54</a></p>
+          <p class="c-row"><span>WhatsApp</span><a href="https://wa.me/+34601012775?text=%C2%A1Hola!%20me%20gustar%C3%ADa%20recibir%20informaci%C3%B3n%20sobre%20GRANDGYM..." target="_blank" rel="noopener">601 01 27 75</a></p>
+          <p class="c-row"><span>Email</span><a href="mailto:gimnasio@grandmontagne.es">gimnasio@grandmontagne.es</a></p>
+        </div>
+        <div class="c-card">
+          <p class="eyebrow">Horario</p>
+          <p class="c-row"><span>L-V</span><b>7:00h a 23:30h</b></p>
+          <p class="c-row"><span>S</span><b>9:00h a 20:00h</b></p>
+          <p class="c-row"><span>D</span><b>9:00h a 14:00h</b></p>
+        </div>
+      </div>
+      <p class="follow">Clases colectivas, actividades infantiles, fitness, crossfit, piscinas, spa, club de judo… ¡Síguenos en nuestras redes sociales para ver todo lo que hacemos en Grandgym!</p>
+      <div class="socials">
+        <a href="https://www.instagram.com/grandgymburgos/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.facebook.com/gimnasio.grandmontagne/" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.youtube.com/channel/UCl8jPw-nWSgCZ-0MA0d6QdQ" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://twitter.com/ggrandmontagne" target="_blank" rel="noopener">Twitter</a>
+        <a href="https://wa.me/+34601012775" target="_blank" rel="noopener">WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <img src="img/logo-color.png" alt="Grandgym · Gimnasio Grandmontagne" class="f-logo">
+    <nav>
+      <a href="https://grandmontagne.es/aviso-legal/" target="_blank" rel="noopener">Aviso Legal</a>
+      <a href="https://grandmontagne.es/politica-de-privacidad/" target="_blank" rel="noopener">Política de Privacidad</a>
+      <a href="https://grandmontagne.es/politica-de-cookies/" target="_blank" rel="noopener">Política de Cookies</a>
+      <a href="https://grandmontagne.es/blog/" target="_blank" rel="noopener">Blog</a>
+    </nav>
+    <p>2026 Gimnasio Grandmontagne</p>
+  </footer>
+</main>
+
+<!-- Prueba 1 día gratis -->
+<div class="modal" id="trial" aria-hidden="true">
+  <div class="modal-bg" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="trialTitle">
+    <button class="modal-x" data-close aria-label="Cerrar">✕</button>
+    <p class="eyebrow">Prueba un día gratis</p>
+    <h3 id="trialTitle">¿Quieres tener acceso totalmente gratuito a nuestras instalaciones?</h3>
+    <form id="trialForm">
+      <label for="tNombre">Nombre<input id="tNombre" name="nombre" required autocomplete="name"></label>
+      <label for="tTel">Teléfono<input id="tTel" name="telefono" type="tel" required autocomplete="tel"></label>
+      <div class="two">
+        <label for="tDia">Día de prueba<input id="tDia" name="dia" type="date" required></label>
+        <label for="tHora">Hora a la que vendrás<input id="tHora" name="hora" type="time" required></label>
+      </div>
+      <label class="check" for="tEdad"><input id="tEdad" type="checkbox" required> Soy mayor de 14 años</label>
+      <label class="check" for="tPriv"><input id="tPriv" type="checkbox" required> Acepto la <a href="https://grandmontagne.es/politica-de-privacidad/" target="_blank" rel="noopener">política de privacidad</a> de GrandGym</label>
+      <button class="btn btn-block" type="submit">Enviar por WhatsApp</button>
+      <p class="fine">Prueba gratuita exclusiva para residentes en Burgos. Será necesario acreditar la residencia en recepción antes del acceso a las instalaciones mediante DNI u otro documento que lo acredite.</p>
+    </form>
+  </div>
+</div>
+
+<script src="horario.js"></script>
+<script src="ui.js"></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

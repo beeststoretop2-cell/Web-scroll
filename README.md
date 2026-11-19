@@ -12,3 +12,11 @@ Landing de una sola página con Three.js: la cámara vuela por 10 escenas en 3D 
 Ver en local: `python3 -m http.server` → http://localhost:8000
 
 Para recibir pedidos, conecta el `TODO` del formulario en `ui.js` a tu backend, Dropi, Shopify o Google Sheets.
+
+---
+
+# Grandgym · rediseño futurista (`grandgym/`)
+
+Rediseño 3D con scroll de la web del Gimnasio Grandmontagne (Burgos), con el contenido real de grandmontagne.es: textos, tarifas, horario completo de adultos e infantil, centro de estética, Club de Judo, reseñas y contacto.
+
+Ver en local: `python3 -m http.server` → http://localhost:8000/grandgym/

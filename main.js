@@ -204,24 +204,26 @@ const heatMats = [];
 /* ---------------- scene anchors ---------------- */
 const P = [
   new THREE.Vector3(0, 0, 0),        // 0 hero
-  new THREE.Vector3(0, 0, -40),      // 1 calor
-  new THREE.Vector3(28, 4, -75),     // 2 niveles
-  new THREE.Vector3(-6, -6, -110),   // 3 masaje
-  new THREE.Vector3(22, 8, -150),    // 4 usb-c
-  new THREE.Vector3(-18, 0, -190),   // 5 seguridad
-  new THREE.Vector3(0, 0, -230),     // 6 real
-  new THREE.Vector3(0, 0, -270),     // 7 packs
-  new THREE.Vector3(16, 0, -305),    // 8 regalo
-  new THREE.Vector3(0, 0, -345),     // 9 faq / final
+  new THREE.Vector3(-14, 2, -22),    // 1 problema (lo que ya sabes)
+  new THREE.Vector3(0, 0, -45),      // 2 mecanismo
+  new THREE.Vector3(28, 4, -78),     // 3 niveles
+  new THREE.Vector3(-6, -6, -112),   // 4 masaje
+  new THREE.Vector3(22, 8, -150),    // 5 usb-c
+  new THREE.Vector3(-18, 0, -190),   // 6 seguridad
+  new THREE.Vector3(0, 0, -230),     // 7 real
+  new THREE.Vector3(0, 0, -270),     // 8 packs
+  new THREE.Vector3(16, 0, -305),    // 9 regalo
+  new THREE.Vector3(0, 0, -345),     // 10 faq / final
 ];
 // camera offset from anchor, and horizontal composition side (-1 = object on right, 1 = object on left, 0 center)
 const K = [
   { off: [0, 0.35, 6.4], side: -1 },
-  { off: [0, 0.4, 11], side: 1 },
-  { off: [-2, 2, 10], side: -1 },
-  { off: [0, 6.5, 11], side: 1 },
-  { off: [4, 1.2, 8], side: -1 },
-  { off: [-2, 1, 9.5], side: 1 },
+  { off: [0, 0.8, 9], side: 1 },
+  { off: [0, 0.4, 11], side: -1 },
+  { off: [-2, 2, 13], side: 1 },
+  { off: [0, 6.5, 11], side: -1 },
+  { off: [4, 1.2, 8], side: 1 },
+  { off: [-2, 1, 9.5], side: -1 },
   { off: [0, 1.5, 13], side: 0 },
   { off: [0, 2.5, 13], side: 0 },
   { off: [-1, 2, 9], side: -1 },
@@ -243,10 +245,82 @@ animated.push((t) => {
   heroBelt.position.y = P[0].y + Math.sin(t * 0.8) * 0.08;
 });
 
-/* 1 CALOR — giant heating element */
+
+/* 1 PROBLEMA — the old way: a hot-water bottle that goes cold */
 {
   const g = new THREE.Group();
   g.position.copy(P[1]);
+  const rubber = new THREE.MeshPhysicalMaterial({ color: 0x8a2a14, roughness: 0.45, clearcoat: 0.6, emissive: 0xff4a12, emissiveIntensity: 0.6 });
+  const bottle = new THREE.Group();
+  const body = new THREE.Mesh(new THREE.SphereGeometry(1, 64, 48), rubber);
+  body.scale.set(1.5, 2.0, 0.45);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.32, 0.42, 0.7, 32), rubber);
+  neck.position.y = 2.15;
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.35, 32), plastic);
+  cap.position.y = 2.6;
+  bottle.add(body, neck, cap);
+  // ribbed texture lines
+  for (let i = -5; i <= 5; i++) {
+    const rib = new THREE.Mesh(new THREE.TorusGeometry(1, 0.012, 6, 64), rubber);
+    const y = i * 0.3, k = Math.sqrt(Math.max(0, 1 - (y / 2) ** 2));
+    rib.scale.set(1.5 * k, 0.45 * k, 1);
+    rib.rotation.x = Math.PI / 2;
+    rib.position.y = y;
+    bottle.add(rib);
+  }
+  bottle.rotation.z = -0.25;
+  g.add(bottle);
+  // frost particles
+  const count = isMobile ? 160 : 320;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3), seed = new Float32Array(count);
+  for (let i = 0; i < count; i++) {
+    pos.set([(Math.random() - 0.5) * 7, 2.5 - Math.random() * 1.5, (Math.random() - 0.5) * 3], i * 3);
+    seed[i] = Math.random();
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
+  const frost = new THREE.ShaderMaterial({
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    uniforms: { uTime: { value: 0 }, uCold: { value: 0 }, uPx: { value: renderer.getPixelRatio() }, uMap: { value: glowSprite } },
+    vertexShader: `
+      attribute float seed; uniform float uTime, uPx; varying float vA;
+      void main(){
+        float t = fract(seed + uTime * 0.08);
+        vec3 p = position; p.y -= t * 5.0; p.x += sin(t * 6.28 + seed * 30.0) * 0.3;
+        vA = sin(t * 3.14);
+        vec4 mv = modelViewMatrix * vec4(p, 1.0);
+        gl_PointSize = (1.5 + seed * 2.0) * uPx * (16.0 / -mv.z);
+        gl_Position = projectionMatrix * mv;
+      }`,
+    fragmentShader: `
+      uniform sampler2D uMap; uniform float uCold; varying float vA;
+      void main(){ vec4 c = texture2D(uMap, gl_PointCoord); gl_FragColor = vec4(vec3(0.6,0.85,1.3), c.a * vA * uCold); }`,
+  });
+  g.add(new THREE.Points(geo, frost));
+  const light = new THREE.PointLight(0xff5a1f, 4, 9, 2);
+  light.position.set(0, 0, 3);
+  g.add(light);
+  scene.add(g);
+  const warm = new THREE.Color(0x8a2a14), coldC = new THREE.Color(0x2a3a4a);
+  const warmL = new THREE.Color(0xff5a1f), coldL = new THREE.Color(0x5aa0ff);
+  animated.push((t) => {
+    // 8s cycle: hot → slowly cooling → cold
+    const c = Math.min(1, ((t % 8) / 8) * 1.4);
+    rubber.color.lerpColors(warm, coldC, c);
+    rubber.emissiveIntensity = 0.6 * (1 - c);
+    light.color.lerpColors(warmL, coldL, c);
+    frost.uniforms.uTime.value = t;
+    frost.uniforms.uCold.value = c;
+    bottle.position.y = Math.sin(t * 0.7) * 0.12;
+    bottle.rotation.y = Math.sin(t * 0.4) * 0.4;
+  });
+}
+
+/* 2 MECANISMO — giant heating element */
+{
+  const g = new THREE.Group();
+  g.position.copy(P[2]);
   const panel = new THREE.Mesh(new THREE.PlaneGeometry(8.4, 4.6, 1, 1), neoprene);
   panel.position.z = -0.25;
   g.add(panel);
@@ -291,7 +365,7 @@ animated.push((t) => {
 /* 2 NIVELES — three heat rings */
 {
   const g = new THREE.Group();
-  g.position.copy(P[2]);
+  g.position.copy(P[3]);
   const colors = [0xffb347, 0xff6a2b, 0xff2d2d];
   const rings = colors.map((c, i) => {
     const m = new THREE.Mesh(new THREE.TorusGeometry(1.5 + i * 0.75, 0.05 + i * 0.02, 16, 160), hotGlow(2 + i * 1.5, new THREE.Color(c)));
@@ -322,7 +396,7 @@ animated.push((t) => {
 /* 3 MASAJE — vibration wave field */
 {
   const g = new THREE.Group();
-  g.position.copy(P[3]);
+  g.position.copy(P[4]);
   const n = isMobile ? 90 : 140, size = 18;
   const geo = new THREE.BufferGeometry();
   const pos = new Float32Array(n * n * 3);
@@ -382,7 +456,7 @@ animated.push((t) => {
 /* 4 USB-C */
 {
   const g = new THREE.Group();
-  g.position.copy(P[4]);
+  g.position.copy(P[5]);
   const rr = (w, h, r) => {
     const s = new THREE.Shape();
     s.moveTo(-w / 2 + r, -h / 2); s.lineTo(w / 2 - r, -h / 2); s.absarc(w / 2 - r, 0, r, -Math.PI / 2, Math.PI / 2);
@@ -433,7 +507,7 @@ animated.push((t) => {
 /* 5 SEGURIDAD — shield + timer */
 {
   const g = new THREE.Group();
-  g.position.copy(P[5]);
+  g.position.copy(P[6]);
   const wire = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(2.1, 1)),
     new THREE.LineBasicMaterial({ color: new THREE.Color(0xff7a3a).multiplyScalar(2), transparent: true, opacity: 0.8, toneMapped: false }));
   g.add(wire);
@@ -480,7 +554,7 @@ animated.push((t) => {
 
 /* 6 REAL — belt big, slow rotation */
 const showBelt = makeBelt();
-showBelt.position.copy(P[6]);
+showBelt.position.copy(P[7]);
 showBelt.scale.setScalar(1.6);
 scene.add(showBelt);
 animated.push((t) => { showBelt.rotation.y = t * 0.25; });
@@ -489,7 +563,7 @@ animated.push((t) => { showBelt.rotation.y = t * 0.25; });
 const packBelts = [];
 {
   const g = new THREE.Group();
-  g.position.copy(P[7]);
+  g.position.copy(P[8]);
   [-4.6, 0, 4.6].forEach((x, i) => {
     const b = makeBelt();
     b.position.set(x, 0.3, i === 1 ? 0.8 : 0);
@@ -516,7 +590,7 @@ const packBelts = [];
 /* 8 REGALO — gift box with emerging belt */
 {
   const g = new THREE.Group();
-  g.position.copy(P[8]);
+  g.position.copy(P[9]);
   const boxMat = new THREE.MeshPhysicalMaterial({ color: 0x141016, roughness: 0.35, clearcoat: 1, sheen: 0.5, sheenColor: new THREE.Color(0xff6a2b) });
   const box = new THREE.Mesh(new THREE.BoxGeometry(2.6, 2.0, 2.6), boxMat);
   box.position.y = -1.2;
@@ -553,7 +627,7 @@ const packBelts = [];
 
 /* 9 FINAL belt */
 const finalBelt = makeBelt();
-finalBelt.position.copy(P[9]);
+finalBelt.position.copy(P[10]);
 finalBelt.scale.setScalar(1.3);
 scene.add(finalBelt);
 const finalLight = new THREE.PointLight(0xff5a1f, 2, 6, 2);

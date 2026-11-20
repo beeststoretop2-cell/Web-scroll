@@ -34,8 +34,8 @@
   --gutr:max(18px,env(safe-area-inset-right,0px));
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{background:var(--void);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:clip}
+body{background:var(--void);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden;overflow-x:clip;-webkit-font-smoothing:antialiased}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -330,6 +330,10 @@ main{position:relative;z-index:2}
   .burger{display:flex}
   .acts,.prices{grid-template-columns:repeat(2,1fr)}
   .treat{grid-template-columns:repeat(2,1fr)}
+  .live,.hud{display:none}
+  /* tablet: paneles con fondo para que el texto se lea sobre las escenas 3D */
+  .panel.wide{padding:28px 22px;border-radius:26px;background:rgba(0,18,46,.66);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .panel:not(.wide):not(.hero){padding:28px 24px;border-radius:26px;background:linear-gradient(180deg,rgba(0,18,46,.5),rgba(0,18,46,.88));backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line)}
 }
 @media (max-width:720px){
   .hud,.live,.nav-right>.btn{display:none}

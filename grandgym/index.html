@@ -7,9 +7,26 @@
 <meta name="description" content="Grandgym, Gimnasio Grandmontagne. Gimnasio en Burgos con equipamiento premium: más de 2800 m², piscina, clases colectivas, musculación Panatta y Eleiko, centro de estética y Club de Judo. Desde 1983.">
 <meta name="theme-color" content="#00122e">
 <link rel="icon" href="img/logo-color.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/unbounded-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/manrope-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="canonical" href="https://grandmontagne.es/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="Grandgym · Gimnasio Grandmontagne">
+<meta property="og:title" content="Grandgym · Gimnasio en Burgos · Vas a sentirte bien">
+<meta property="og:description" content="Más de 2800 m², piscina, clases colectivas, musculación Panatta y Eleiko, centro de estética y Club de Judo. Desde 1983 en Burgos. Prueba 1 día gratis.">
+<meta property="og:url" content="https://grandmontagne.es/">
+<meta property="og:image" content="https://grandmontagne.es/img/og-grandgym.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ggrandmontagne">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ExerciseGym","name":"Grandgym · Gimnasio Grandmontagne","url":"https://grandmontagne.es/","telephone":"+34947228654","email":"gimnasio@grandmontagne.es","foundingDate":"1983","image":"https://grandmontagne.es/img/og-grandgym.jpg",
+"address":{"@type":"PostalAddress","streetAddress":"C/ Francisco Grandmontagne Nº13","postalCode":"09007","addressLocality":"Burgos","addressCountry":"ES"},
+"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday"],"opens":"07:00","closes":"23:30"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"09:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"09:00","closes":"14:00"}],
+"sameAs":["https://www.instagram.com/grandgymburgos/","https://www.facebook.com/gimnasio.grandmontagne/","https://www.youtube.com/channel/UCl8jPw-nWSgCZ-0MA0d6QdQ","https://twitter.com/ggrandmontagne"]}
+</script>
 <link rel="stylesheet" href="styles.css">
 <script type="importmap">
 { "imports": {
@@ -424,6 +441,12 @@
       <p class="fine">Prueba gratuita exclusiva para residentes en Burgos. Será necesario acreditar la residencia en recepción antes del acceso a las instalaciones mediante DNI u otro documento que lo acredite.</p>
     </form>
   </div>
+</div>
+
+<!-- Aviso de cookies: solo aparece si se configura analítica en ui.js (ANALYTICS_ID) -->
+<div class="cookies" id="cookies" hidden role="dialog" aria-live="polite" aria-label="Aviso de cookies">
+  <p>Usamos cookies analíticas para entender cómo se usa la web y mejorarla. Puedes aceptarlas o rechazarlas. <a href="https://grandmontagne.es/politica-de-cookies/" target="_blank" rel="noopener">Política de Cookies</a></p>
+  <div><button class="btn btn-ghost btn-sm" id="ckNo">Rechazar</button><button class="btn btn-sm" id="ckYes">Aceptar</button></div>
 </div>
 
 <script src="horario.js"></script>

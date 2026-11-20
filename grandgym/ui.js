@@ -188,5 +188,29 @@
     close();
   });
 
+  /* ---------- cookies + analítica ----------
+     Ahora la web no instala ninguna cookie, así que el aviso no se muestra.
+     Para activar Google Analytics 4, escribe aquí su ID (p. ej. 'G-XXXXXXXXXX'):
+     el aviso aparecerá y Analytics solo se cargará si el visitante acepta. */
+  const ANALYTICS_ID = '';
+  const ck = $('#cookies');
+  const store = { get() { try { return localStorage.getItem('gg-consent'); } catch (e) { return null; } },
+                  set(v) { try { localStorage.setItem('gg-consent', v); } catch (e) {} } };
+  function loadAnalytics() {
+    const s = document.createElement('script');
+    s.async = true; s.src = 'https://www.googletagmanager.com/gtag/js?id=' + ANALYTICS_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { dataLayer.push(arguments); };
+    gtag('js', new Date()); gtag('config', ANALYTICS_ID, { anonymize_ip: true });
+  }
+  if (ANALYTICS_ID) {
+    const v = store.get();
+    if (v === 'yes') loadAnalytics();
+    else if (v !== 'no') ck.hidden = false;
+    $('#ckYes').addEventListener('click', () => { store.set('yes'); ck.hidden = true; loadAnalytics(); });
+    $('#ckNo').addEventListener('click', () => { store.set('no'); ck.hidden = true; });
+  }
+
   onScroll();
 })();

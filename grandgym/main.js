@@ -95,7 +95,7 @@ function makeBarbell(scale = 1) {
   g.add(bar);
   const plates = [
     { r: 1.12, w: 0.24, c: 0x005da8, glow: ICE },     // 25 kg
-    { r: 1.12, w: 0.2, c: 0xe9f2fb, glow: FLAME },    // 20 kg
+    { r: 1.12, w: 0.2, c: 0xa9bccf, glow: FLAME },    // 20 kg
     { r: 0.86, w: 0.16, c: 0x002b64, glow: ICE },     // 15 kg
     { r: 0.66, w: 0.12, c: 0x85d0f0, glow: FLAME },   // 10 kg
   ];

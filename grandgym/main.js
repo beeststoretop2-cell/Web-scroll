@@ -130,9 +130,9 @@ scene.add(hero);
   const l2 = new THREE.PointLight(0xffffff, 6, 10, 2); l2.position.set(-3, 1.5, 2); hero.add(l2);
 }
 animated.push((t) => {
-  hero.rotation.y = -0.5 + Math.sin(t * 0.4) * 0.35 + scrollF * 1.2;
+  hero.rotation.y = -0.5 + Math.sin(t * 0.25) * 0.3 + scrollF * 0.5;
   hero.rotation.x = 0.25 + Math.sin(t * 0.6) * 0.05;
-  hero.position.y = Math.sin(t * 0.9) * 0.15;
+  hero.position.y = Math.sin(t * 0.6) * 0.12;
 });
 
 /* 1 CENTRO — edificio de 2800 m² en wireframe */
@@ -162,7 +162,7 @@ animated.push((t) => {
   g.rotation.y = 0.6;
   scene.add(g);
   animated.push((t) => {
-    const y = -3 + ((t * 0.5) % 1) * 6.2;
+    const y = -3 + ((t * 0.22) % 1) * 6.2;
     scanner.position.y = scanEdge.position.y = y;
     g.rotation.y = 0.6 + Math.sin(t * 0.2) * 0.25;
   });
@@ -202,7 +202,7 @@ animated.push((t) => {
   g.rotation.y = -0.7;
   scene.add(g);
   animated.push((t) => {
-    const lift = (Math.sin(t * 1.4) * 0.5 + 0.5) * 1.6;
+    const lift = (Math.sin(t * 0.8) * 0.5 + 0.5) * 1.6;
     plates.forEach((p, i) => { p.position.y = -2.4 + i * 0.165 + (i >= 6 ? lift : 0); });
     stripe.position.set(0, -2.4 + 6 * 0.165 - 0.09 + lift, -0.6);
     const pos = cableGeo.attributes.position;
@@ -242,8 +242,8 @@ animated.push((t) => {
   const l = new THREE.PointLight(0x2f8fd8, 10, 14, 2); l.position.set(0, 0, 4); g.add(l);
   scene.add(g);
   animated.push((t) => {
-    wheel.rotation.y = t * 3;
-    orbits.forEach((o, i) => { o.rotation.z = t * (0.2 + i * 0.1) * (i % 2 ? -1 : 1); });
+    wheel.rotation.y = t * 1.2;
+    orbits.forEach((o, i) => { o.rotation.z = t * (0.1 + i * 0.05) * (i % 2 ? -1 : 1); });
     g.rotation.y = Math.sin(t * 0.3) * 0.4;
   });
 }
@@ -342,7 +342,7 @@ animated.push((t) => {
   floor.rotation.x = -Math.PI / 2; floor.position.y = -2.6; g.add(floor);
   const l = new THREE.PointLight(0x85d0f0, 10, 16, 2); l.position.set(0, 3, 5); g.add(l);
   scene.add(g);
-  animated.push((t) => stacks.forEach((s, i) => { s.rotation.y = t * 0.5 * (i % 2 ? 1 : -1); s.position.y = Math.sin(t * 1.2 + i) * 0.12; }));
+  animated.push((t) => stacks.forEach((s, i) => { s.rotation.y = t * 0.18 * (i % 2 ? 1 : -1); s.position.y = Math.sin(t * 0.7 + i) * 0.1; }));
 }
 
 /* 8 ESTÉTICA — orbe iridiscente */
@@ -388,7 +388,7 @@ animated.push((t) => {
   ribbon(0x005da8, -0.45, 0.22); ribbon(0xf4f8fc, 0.45, -0.22);
   const l = new THREE.PointLight(0xffc060, 12, 10, 2); l.position.set(2, 1, 3); g.add(l);
   scene.add(g);
-  animated.push((t) => { medal.rotation.y = t * 0.9; g.rotation.z = Math.sin(t * 0.7) * 0.05; g.position.y = P[9].y + Math.sin(t) * 0.12; });
+  animated.push((t) => { medal.rotation.y = t * 0.4; g.rotation.z = Math.sin(t * 0.7) * 0.05; g.position.y = P[9].y + Math.sin(t) * 0.12; });
 }
 
 /* 10 RESEÑAS — 4,3 estrellas */
@@ -411,7 +411,7 @@ animated.push((t) => {
   g.position.y += 4.4;
   g.scale.setScalar(0.8);
   scene.add(g);
-  animated.push((t) => stars.forEach((s, i) => { s.rotation.y = Math.sin(t * 1.2 + i * 0.6) * 0.6; s.position.y = Math.cos((i - 2) * 0.32) * 1.2 - 1.2 + Math.sin(t * 1.5 + i) * 0.12; }));
+  animated.push((t) => stars.forEach((s, i) => { s.rotation.y = Math.sin(t * 0.6 + i * 0.6) * 0.45; s.position.y = Math.cos((i - 2) * 0.32) * 1.2 - 1.2 + Math.sin(t * 1.5 + i) * 0.12; }));
 }
 
 /* 11 CONTACTO — barra final */
@@ -421,7 +421,7 @@ scene.add(finalBar);
 {
   const l = new THREE.PointLight(0x2f8fd8, 9, 12, 2); l.position.set(0, 2, 3); finalBar.add(l);
 }
-animated.push((t) => { finalBar.rotation.y = t * 0.35; finalBar.position.y = P[11].y + Math.sin(t * 0.9) * 0.15; });
+animated.push((t) => { finalBar.rotation.y = t * 0.15; finalBar.position.y = P[11].y + Math.sin(t * 0.9) * 0.15; });
 
 /* ---------------- túnel de pórticos LED (techos de Grandgym) ---------------- */
 {
@@ -522,14 +522,14 @@ function updateCamera(dt, t) {
   mouse.sx += (mouse.x - mouse.sx) * 0.05; mouse.sy += (mouse.y - mouse.sy) * 0.05;
   camera.position.set(tmpPos.x + mouse.sx * 1.0, tmpPos.y - mouse.sy * 0.6, tmpPos.z);
   camera.lookAt(tmpTarget);
-  camera.rotation.z += Math.sin(e * Math.PI) * 0.1 * (i % 2 ? 1 : -1);
+  camera.rotation.z += Math.sin(e * Math.PI) * 0.05 * (i % 2 ? 1 : -1);
 
   const portrait = innerWidth < 720 || innerWidth / innerHeight < 0.9;
   const side = K[i].side + (K[i + 1].side - K[i].side) * e;
   shift.x += ((portrait ? 0 : side * 0.22) - shift.x) * 0.08;
   shift.y += ((portrait ? 0.24 : 0) - shift.y) * 0.08;
   camera.setViewOffset(innerWidth, innerHeight, shift.x * innerWidth, shift.y * innerHeight, innerWidth, innerHeight);
-  camera.fov = (portrait ? 60 : 42) + Math.sin(e * Math.PI) * 10;
+  camera.fov = (portrait ? 60 : 42) + Math.sin(e * Math.PI) * 6;
   camera.updateProjectionMatrix();
 }
 

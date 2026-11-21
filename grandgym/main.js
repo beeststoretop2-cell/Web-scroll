@@ -14,11 +14,11 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: !isMobile, powerPr
 renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
+renderer.toneMappingExposure = 1.2;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x00122e);
-scene.fog = new THREE.FogExp2(0x00122e, 0.03);
+scene.fog = new THREE.FogExp2(0x031d45, 0.018);
 const pmrem = new THREE.PMREMGenerator(renderer);
 scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
 
@@ -498,6 +498,71 @@ let scrollF = 0;
 const shift = { x: 0, y: 0 };
 const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
 addEventListener('pointermove', (e) => { mouse.x = e.clientX / innerWidth - 0.5; mouse.y = e.clientY / innerHeight - 0.5; }, { passive: true });
+/* ---------------- fondo fotográfico: fotos reales de Grandgym por escena ---------------- */
+const BG_PHOTOS = [
+  'img/eleiko-racks.jpg', 'img/sala-panorama.jpg', 'img/panatta-logo.jpg', 'img/pasillo-maquinas.jpg',
+  'img/ciclo-sala.jpg', 'img/act/fondo-piscina.jpg', 'img/sala-led.jpg', 'img/rack-eleiko.jpg',
+  'img/est/fondo-estetica.jpg', 'img/judo/fondo-judo.jpg', 'img/cardio-azul.jpg', 'img/eleiko-zona-2.jpg',
+];
+const texLoader = new THREE.TextureLoader();
+const texCache = {};
+const blank = new THREE.DataTexture(new Uint8Array([3, 20, 50, 255]), 1, 1); blank.needsUpdate = true;
+function bgTex(i) {
+  i = Math.max(0, Math.min(BG_PHOTOS.length - 1, i));
+  if (!texCache[i]) {
+    texCache[i] = { tex: null };
+    texLoader.load(BG_PHOTOS[i], (t) => { t.colorSpace = THREE.SRGBColorSpace; t.minFilter = THREE.LinearMipmapLinearFilter; texCache[i].tex = t; });
+  }
+  return texCache[i].tex;
+}
+const bgMat = new THREE.ShaderMaterial({
+  depthTest: false, depthWrite: false, fog: false,
+  uniforms: {
+    uA: { value: blank }, uB: { value: blank }, uMix: { value: 0 }, uTime: { value: 0 },
+    uAspA: { value: 1.5 }, uAspB: { value: 1.5 }, uScreen: { value: innerWidth / innerHeight }, uMouse: { value: new THREE.Vector2() },
+  },
+  vertexShader: `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.9999, 1.0); }`,
+  fragmentShader: `
+    uniform sampler2D uA, uB; uniform float uMix, uTime, uAspA, uAspB, uScreen; uniform vec2 uMouse; varying vec2 vUv;
+    vec2 cover(vec2 uv, float imgAsp, float zoom, vec2 drift){
+      vec2 s = uScreen > imgAsp ? vec2(1.0, imgAsp / uScreen) : vec2(uScreen / imgAsp, 1.0);
+      return (uv - 0.5) * s / zoom + 0.5 + drift;
+    }
+    vec3 grade(vec3 c, vec2 uv){
+      float l = dot(c, vec3(0.299, 0.587, 0.114));
+      vec3 duo = mix(vec3(0.0, 0.05, 0.16), vec3(0.62, 0.85, 1.0), smoothstep(0.05, 0.95, l));
+      vec3 o = mix(duo, c, 0.42) * 0.72;
+      o /= 1.0 + l * 0.55;                                         // comprime las zonas muy claras
+      o += vec3(0.05, 0.12, 0.25) * pow(l, 3.0) * 1.6;            // brillos LED en azul
+      float v = smoothstep(1.15, 0.25, length((uv - 0.5) * vec2(1.25, 1.0)));
+      return o * mix(0.35, 1.0, v);
+    }
+    void main(){
+      float kA = 1.06 + 0.04 * sin(uTime * 0.05), kB = 1.1 - uMix * 0.04;
+      vec2 d = uMouse * 0.012;
+      vec3 a = texture2D(uA, cover(vUv, uAspA, kA + uMix * 0.08, d + vec2(0.0, uMix * 0.03))).rgb;
+      vec3 b = texture2D(uB, cover(vUv, uAspB, kB, d - vec2(0.0, (1.0 - uMix) * 0.03))).rgb;
+      vec3 c = mix(grade(a, vUv), grade(b, vUv), smoothstep(0.15, 0.85, uMix));
+      c *= mix(1.0, 0.82, sin(uMix * 3.14159));                   // ligero oscurecido durante el viaje
+      gl_FragColor = vec4(c, 1.0);
+      #include <colorspace_fragment>
+    }`,
+});
+const bgMesh = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), bgMat);
+bgMesh.frustumCulled = false; bgMesh.renderOrder = -1000;
+scene.add(bgMesh);
+function updateBackdrop(i, e, t) {
+  const a = bgTex(i), b = bgTex(i + 1); bgTex(i + 2);
+  const ta = a || blank, tb = b || a || blank;
+  bgMat.uniforms.uA.value = ta; bgMat.uniforms.uB.value = tb;
+  bgMat.uniforms.uAspA.value = ta.image && ta.image.width ? ta.image.width / ta.image.height : 1.5;
+  bgMat.uniforms.uAspB.value = tb.image && tb.image.width ? tb.image.width / tb.image.height : 1.5;
+  bgMat.uniforms.uMix.value = e; bgMat.uniforms.uTime.value = t;
+  bgMat.uniforms.uScreen.value = innerWidth / innerHeight;
+  bgMat.uniforms.uMouse.value.set(mouse.sx, -mouse.sy);
+}
+bgTex(0); bgTex(1);
+
 const tmpPos = new THREE.Vector3(), tmpTarget = new THREE.Vector3();
 const n = P.length - 1;
 let galleryDrift = 0;
@@ -506,6 +571,7 @@ function updateCamera(dt, t) {
   scrollF += (tf - scrollF) * Math.min(1, dt * (reduceMotion ? 20 : 3));
   const i = Math.min(Math.floor(scrollF), n - 1);
   const e = ease(Math.min(1, Math.max(0, scrollF - i)));
+  updateBackdrop(i, e, t);
   camCurve.getPoint((i + e) / n, tmpPos);
   tmpPos.y += Math.sin(e * Math.PI) * 2;
   tmpTarget.lerpVectors(P[i], P[i + 1], e);

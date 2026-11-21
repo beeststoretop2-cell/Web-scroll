@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pizzería Tómbola · Pizza romana en horno de leña · Burgos</title>
+<meta name="description" content="Pizzería Tómbola, en C/ Diego Porcelos 7, Burgos. Pizza romana de 33 cm en horno de leña con masa fermentada al menos 48 horas. Más de 30 pizzas. Local, para recoger y a domicilio con Glovo.">
+<meta name="theme-color" content="#0c0604">
+<link rel="icon" href="img/logo.png">
+<link rel="preload" href="fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="canonical" href="https://www.pizzeriatombolaburgos.com/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="Pizzería Tómbola">
+<meta property="og:title" content="Pizzería Tómbola · Donde la pizza tiene un sabor redondo">
+<meta property="og:description" content="Pizza romana en horno de leña. Masa fermentada al menos 48 horas. C/ Diego Porcelos 7, Burgos.">
+<meta property="og:image" content="https://www.pizzeriatombolaburgos.com/img/horno.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Restaurant","name":"Pizzería Tómbola","servesCuisine":["Pizza","Italiana"],"url":"https://www.pizzeriatombolaburgos.com/","telephone":"+34947094784","priceRange":"10€-20€",
+"address":{"@type":"PostalAddress","streetAddress":"C/ Diego Porcelos 7","postalCode":"09003","addressLocality":"Burgos","addressCountry":"ES"},
+"openingHoursSpecification":[
+{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday"],"opens":"19:30","closes":"23:00"},
+{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"19:30","closes":"23:59"},
+{"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday","Sunday"],"opens":"13:30","closes":"16:00"},
+{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"19:30","closes":"23:59"},
+{"@type":"OpeningHoursSpecification","dayOfWeek":"Sunday","opens":"19:30","closes":"23:00"}]}
+</script>
+<link rel="stylesheet" href="styles.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+</head>
+<body>
+<a class="skip" href="#content">Saltar al contenido</a>
+
+<!-- Precarga: cuenta las 48 horas de fermentación -->
+<div id="loader" aria-hidden="true">
+  <div class="ld-inner">
+    <img src="img/logo-claro.png" alt="" class="ld-logo">
+    <div class="ld-num"><span id="ldNum">0</span><em>h</em></div>
+    <div class="ld-bar"><i id="ldBar"></i></div>
+    <p class="ld-txt">Fermentando la masa · mínimo 48 horas</p>
+  </div>
+</div>
+
+<canvas id="webgl" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="vignette" aria-hidden="true"></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<!-- Barra promocional -->
+<a class="promo" href="#contacto">
+  <span class="promo-track"><span>Toda nuestra carta disponible para llevar</span><i>✦</i><span>Recoge en C/ Diego Porcelos 7</span><i>✦</i><span>A domicilio con Glovo</span><i>✦</i><span>Pizza romana · 33 cm · horno de leña</span><i>✦</i></span>
+  <b>Pedir →</b>
+</a>
+
+<header class="nav" id="nav">
+  <a href="#inicio" class="brand" aria-label="Pizzería Tómbola, inicio"><img src="img/logo-claro.png" alt="Pizzería Tómbola" width="166" height="62"></a>
+  <nav class="links" aria-label="Principal">
+    <a href="#masa">La masa</a>
+    <a href="#sabor">El sabor</a>
+    <a href="#carta">Carta</a>
+    <a href="#equipo">El equipo</a>
+    <a href="#bebidas">Bebidas</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+  <div class="nav-right">
+    <span class="live" id="liveStatus"><i></i><span>Horario</span></span>
+    <a href="tel:+34947094784" class="btn btn-sm magnetic"><span>Llamar</span></a>
+    <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mmenu"><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="mmenu" id="mmenu">
+  <a href="#masa">La masa</a><a href="#sabor">El sabor</a><a href="#carta">Carta</a><a href="#equipo">El equipo</a><a href="#bebidas">Bebidas</a><a href="#contacto">Contacto</a>
+  <a href="tel:+34947094784" class="btn"><span>Llamar · 947 09 47 84</span></a>
+</div>
+
+<!-- Contador lateral de escena -->
+<aside class="hud" aria-hidden="true">
+  <span class="hud-num" id="hudNum">01</span>
+  <span class="hud-track"><i id="hudFill"></i></span>
+  <span class="hud-tot" id="hudTot">07</span>
+  <span class="hud-label" id="hudLabel">El horno</span>
+</aside>
+
+<main id="content">
+
+  <!-- 0 · HORNO -->
+  <section class="scene hero" id="inicio" data-scene="0" data-label="El horno">
+    <div class="panel panel-hero">
+      <p class="kicker"><span class="dot"></span>Pizzería Tómbola · Burgos</p>
+      <h1 class="mega">Donde la pizza tiene un sabor <em class="serif">redondo.</em></h1>
+      <p class="lead">Pizza romana de 33&nbsp;cm, fina y crujiente, con una masa que fermenta al menos 48&nbsp;horas. Por eso es ligera: llegas a la última porción con ganas de otra.</p>
+      <div class="actions">
+        <a href="#carta" class="btn magnetic"><span>Ver la carta</span></a>
+        <a href="tel:+34947094784" class="btn btn-ghost magnetic"><span>Llamar · 947 09 47 84</span></a>
+      </div>
+      <ul class="data-row">
+        <li><b>48 h</b><span>fermentación</span></li>
+        <li><b>33 cm</b><span>cada pizza</span></li>
+        <li><b>+30</b><span>pizzas</span></li>
+        <li><b>Glovo</b><span>a domicilio</span></li>
+      </ul>
+    </div>
+    <a class="scroll-hint" href="#masa" aria-label="Bajar a la masa"><span>Scroll</span><i></i></a>
+  </section>
+
+  <!-- 1 · LA MASA -->
+  <section class="scene" id="masa" data-scene="1" data-label="La masa">
+    <div class="panel panel-r glass">
+      <p class="kicker">01 — Nuestro obrador</p>
+      <h2 class="mega">48 horas <em class="serif">antes de tu primer bocado.</em></h2>
+      <p>Elaboramos nuestra masa a diario con un proceso de fermentación de al menos 48&nbsp;horas. Así obtenemos una masa ligera y saludable y un sabor único.</p>
+      <div class="ferment" id="ferment">
+        <div class="f-head"><span class="mono">Mueve el reloj de la masa</span><output id="fOut" class="mono">48 h</output></div>
+        <input type="range" id="fRange" min="0" max="48" step="1" value="48" aria-label="Horas de fermentación" aria-describedby="fStage">
+        <div class="f-ticks mono" aria-hidden="true"><span>0</span><span>12</span><span>24</span><span>36</span><span>48 h</span></div>
+        <p class="f-stage" id="fStage" aria-live="polite">Lista para el horno: ligera y con sabor propio.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · EL SABOR -->
+  <section class="scene" id="sabor" data-scene="2" data-label="El sabor">
+    <div class="panel glass">
+      <p class="kicker">02 — El sabor</p>
+      <h2 class="mega">La auténtica pizza <em class="serif">romana.</em></h2>
+      <p>Con productos de primera calidad: mozzarella y burrata, lardo toscano, boletus, aceite de trufa, paletilla ibérica y dos quesos de nuestra tierra, Sasamón curado e Hinestrosa semicurado.</p>
+      <div class="counters">
+        <div class="tilt"><b><span data-count="48">48</span><small>h</small></b><span>de fermentación mínima</span></div>
+        <div class="tilt"><b><span data-count="33">33</span><small>cm</small></b><span>de diámetro en cada pizza</span></div>
+        <div class="tilt"><b><span data-count="33">33</span></b><span>recetas en la carta</span></div>
+        <div class="tilt"><b><span data-count="13">13</span><small>€</small></b><span>la Margarita, para empezar</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="mq-track">
+      <span>Mozzarella</span><i>✦</i><span class="serif">burrata</span><i>✦</i><span>Lardo toscano</span><i>✦</i><span class="serif">boletus</span><i>✦</i><span>Aceite de trufa</span><i>✦</i><span class="serif">Sasamón</span><i>✦</i><span>Hinestrosa</span><i>✦</i><span class="serif">rúcula</span><i>✦</i><span>Paletilla ibérica</span><i>✦</i><span class="serif">gorgonzola</span><i>✦</i>
+      <span>Mozzarella</span><i>✦</i><span class="serif">burrata</span><i>✦</i><span>Lardo toscano</span><i>✦</i><span class="serif">boletus</span><i>✦</i><span>Aceite de trufa</span><i>✦</i><span class="serif">Sasamón</span><i>✦</i><span>Hinestrosa</span><i>✦</i><span class="serif">rúcula</span><i>✦</i><span>Paletilla ibérica</span><i>✦</i><span class="serif">gorgonzola</span><i>✦</i>
+    </div>
+  </div>
+
+  <!-- 3 · CARTA -->
+  <section class="scene scene-tall" id="carta" data-scene="3" data-label="La carta">
+    <div class="carta-head glass">
+      <p class="kicker">03 — La carta · Tamaño 33 cm</p>
+      <h2 class="mega">33 pizzas. <em class="serif">Una es la tuya.</em></h2>
+      <div class="carta-tools">
+        <div class="tabs" role="tablist" aria-label="Familias de pizza" id="tabs">
+          <button role="tab" aria-selected="true" class="on" data-cat="all">Todas</button>
+          <button role="tab" aria-selected="false" data-cat="clasicas">Clásicas</button>
+          <button role="tab" aria-selected="false" data-cat="especiales">Especiales · 17 €</button>
+          <button role="tab" aria-selected="false" data-cat="gourmet">Gourmet</button>
+          <button role="tab" aria-selected="false" data-cat="sugerencias">Sugerencias</button>
+          <button role="tab" aria-selected="false" data-cat="dulces">Dulces</button>
+        </div>
+        <button class="btn btn-tombola magnetic" id="spin"><span>🎱 ¿Indeciso? Gira la tómbola</span></button>
+      </div>
+    </div>
+    <div class="tombola-result" id="tombolaResult" aria-live="polite" hidden></div>
+    <div class="menu-grid" id="menuGrid"></div>
+    <p class="carta-note mono">Masa fermentada mínimo 48 horas · Pizzas artesanas en horno de leña · IVA incluido · Disponemos de información para personas con alergias y/o intolerancias.</p>
+  </section>
+
+  <!-- 4 · EL EQUIPO (galería horizontal) -->
+  <section class="scene hscroll" id="equipo" data-scene="4" data-label="El equipo">
+    <div class="hs-sticky">
+      <div class="hs-head">
+        <p class="kicker">04 — El equipo</p>
+        <h2 class="mega">Maestros pizzeros <em class="serif">con pasión.</em></h2>
+        <p>Somos maestros pizzeros que vivimos con pasión la pizza, en constante formación.</p>
+      </div>
+      <div class="hs-track" id="hsTrack">
+        <figure class="hs-card tall"><img src="img/pizzeros.jpg" alt="Dos pizzeros de Tómbola trabajando junto a la mesa de la masa" loading="lazy"></figure>
+        <figure class="hs-card"><img src="img/pala-pizza.jpg" alt="Pizza recién salida del horno sobre la pala" loading="lazy"></figure>
+        <div class="hs-quote glass"><span class="mono">Del obrador</span><p class="serif">“Masa ligera y saludable, y un sabor único.”</p></div>
+        <figure class="hs-card tall"><img src="img/mural.jpg" alt="Pizzera de Tómbola con una pizza frente al mural de grafiti del local" loading="lazy"></figure>
+        <figure class="hs-card"><img src="img/horno-cupula.jpg" alt="Cúpula roja del horno de Tómbola" loading="lazy"></figure>
+        <figure class="hs-card tall"><img src="img/pizza-neon.jpg" alt="Pizza vegetal en tabla de madera bajo el neón Viva la pizza" loading="lazy"></figure>
+        <div class="hs-quote glass"><span class="mono">El local</span><p class="serif">Grafiti, neón y un horno rojo que no se apaga.</p></div>
+        <figure class="hs-card"><img src="img/mural-astronauta.jpg" alt="Mural del local con un astronauta y el nombre Tómbola" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · BEBIDAS -->
+  <section class="scene" id="bebidas" data-scene="5" data-label="Bebidas">
+    <div class="panel panel-r glass">
+      <p class="kicker">05 — Para acompañar</p>
+      <h2 class="mega">Vinos <em class="serif">por copas y botellas.</em></h2>
+      <div class="drinks">
+        <div class="drink tilt">
+          <h3>Cerveza de barril <small>Caña o pinta · Mahou</small></h3>
+          <p>Mahou · Maestra · IPA · 0,0 Tostada</p>
+        </div>
+        <div class="drink tilt">
+          <h3>En botella</h3>
+          <p>Alhambra · Coronita · Rubia 0,0 · Pájaro Amarillo</p>
+        </div>
+        <div class="drink tilt">
+          <h3>Smoothies <small>Fruta + zumo</small></h3>
+          <ul class="smoothies">
+            <li><b>Energético</b>fresa + plátano</li>
+            <li><b>Regenerador</b>kiwi + piña + mango + melón</li>
+            <li><b>Antioxidante</b>papaya + mango + piña</li>
+            <li><b>Protector</b>fresa + mora + frambuesa</li>
+            <li><b>Tonificante</b>plátano + mango + piña + coco</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · CONTACTO -->
+  <section class="scene" id="contacto" data-scene="6" data-label="Contacto">
+    <div class="panel glass contact">
+      <p class="kicker">06 — En contacto</p>
+      <h2 class="mega">Esta noche, <em class="serif">pizza.</em></h2>
+      <p class="addr"><b>C/ Diego Porcelos 7</b> · 09003 Burgos</p>
+      <div class="ways">
+        <a class="way tilt" href="tel:+34947094784"><span class="mono">Local y recoger</span><b>947 09 47 84</b><small>Llama y la tienes lista al llegar</small></a>
+        <!-- TODO: sustituir por el enlace directo de Tómbola en Glovo -->
+        <a class="way tilt" href="https://glovoapp.com/es/es/burgos/" target="_blank" rel="noopener"><span class="mono">A domicilio</span><b>Glovo</b><small>Toda la carta, en tu casa</small></a>
+        <a class="way tilt" href="https://www.google.com/maps/search/?api=1&amp;query=Pizzer%C3%ADa+T%C3%B3mbola+Diego+Porcelos+7+Burgos" target="_blank" rel="noopener"><span class="mono">Cómo llegar</span><b>Ver mapa</b><small>Diego Porcelos 7, Burgos</small></a>
+      </div>
+      <div class="hours">
+        <div class="h-head"><h3>Horario</h3><span class="live big" id="liveStatus2"><i></i><span></span></span></div>
+        <ul id="hoursList">
+          <li data-d="1"><span>Lunes</span><b>19:30 – 23:00</b></li>
+          <li data-d="2"><span>Martes</span><b>19:30 – 23:00</b></li>
+          <li data-d="3"><span>Miércoles</span><b>19:30 – 23:00</b></li>
+          <li data-d="4"><span>Jueves</span><b>19:30 – 23:00</b></li>
+          <li data-d="5"><span>Viernes</span><b>19:30 – 24:00</b></li>
+          <li data-d="6"><span>Sábado</span><b>13:30 – 16:00 · 19:30 – 24:00</b></li>
+          <li data-d="0"><span>Domingo</span><b>13:30 – 16:00 · 19:30 – 23:00</b></li>
+        </ul>
+      </div>
+      <!-- TODO: confirmar la cuenta de Instagram (en la carta aparece #pizzeriatombolaburgos) -->
+      <a class="insta" href="https://www.instagram.com/pizzeriatombolaburgos/" target="_blank" rel="noopener">Síguenos · #pizzeriatombolaburgos</a>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <img src="img/logo-claro.png" alt="Pizzería Tómbola" width="140" height="52">
+    <p>© 2026 Pizzería Tómbola · C/ Diego Porcelos 7, 09003 Burgos · <a href="tel:+34947094784">947 09 47 84</a></p>
+    <p class="mono">Toda nuestra carta disponible para llevar</p>
+  </footer>
+</main>
+
+<!-- Pedido -->
+<button class="order-pill" id="orderPill" hidden aria-controls="orderPanel" aria-expanded="false"><span>Tu pedido</span><b id="orderCount">0</b><em id="orderTotal">0 €</em></button>
+<div class="order-panel" id="orderPanel" role="dialog" aria-modal="true" aria-labelledby="orderTitle" aria-hidden="true">
+  <div class="op-back" data-close></div>
+  <div class="op-sheet glass">
+    <div class="op-head"><h3 id="orderTitle">Tu pedido</h3><button class="op-x" data-close aria-label="Cerrar el pedido">✕</button></div>
+    <ul id="orderList"></ul>
+    <div class="op-total"><span>Total</span><b id="orderTotal2">0 €</b></div>
+    <p class="op-note">Llámanos y dinos tu pedido: lo tendremos listo para recoger. O pídelo a domicilio en Glovo.</p>
+    <div class="op-actions">
+      <a href="tel:+34947094784" class="btn magnetic"><span>Llamar · 947 09 47 84</span></a>
+      <a href="https://glovoapp.com/es/es/burgos/" target="_blank" rel="noopener" class="btn btn-ghost"><span>Pedir en Glovo</span></a>
+    </div>
+  </div>
+</div>
+
+<noscript><style>#loader{display:none}</style></noscript>
+<script src="ui.js" defer></script>
+<script type="module" src="main.js"></script>
+</body>
+</html>

@@ -18,3 +18,7 @@ Archivos: `index.html` (contenido), `styles.css` (diseño), `main.js` (escenas 3
 - *Identificación:* "Una es la tuya", la tómbola, los quesos de Burgos (Sasamón, Hinestrosa).
 
 **Pendiente de confirmar con el dueño:** el enlace directo de Tómbola en Glovo y la cuenta de Instagram (marcados con `TODO` en `index.html`), y fotos nuevas en buena calidad (ahora solo hay 3 en su web).
+
+## Archivo para enseñar al cliente
+
+`demo/Tombola-propuesta-web.html`: la web completa en un solo archivo (3D, fotos y fuentes incluidas). Se abre con doble clic, sin servidor ni internet. Arriba tiene un selector **Ordenador / Móvil**; la vista móvil muestra la web dentro de un marco de teléfono.

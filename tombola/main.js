@@ -717,7 +717,9 @@ addEventListener('pointermove', (e) => { mouse.x = e.clientX / innerWidth - 0.5;
 
 /* ---------------- fondo: fotos reales de Tómbola, virado a dos tonos de brasa, Ken Burns ---------------- */
 // Fondos: fotos reales del local y del equipo (Instagram de Tómbola)
-const BG_PHOTOS = ['img/real/alba-horno.jpg', 'img/real/popeye.jpg', 'img/real/iberica.jpg', 'img/real/tombola.jpg', 'img/real/equipo-catedral.jpg', 'img/real/brindis.jpg', 'img/real/caperucita.jpg'];
+// Vídeos reales (Instagram de Tómbola) en las escenas clave; fotos reales en el resto
+const BG_PHOTOS = ['video/horno.mp4', 'video/masa.mp4', 'video/sabor.mp4', 'img/real/tombola.jpg', 'video/et.mp4', 'img/real/brindis.jpg', 'video/local.mp4'];
+const BG_WEBM = { 0: 'video/horno.webm', 1: 'video/masa.webm', 2: 'video/sabor.webm', 4: 'video/et.webm', 6: 'video/local.webm' };
 const texLoader = new THREE.TextureLoader();
 const texCache = {};
 const blank = new THREE.DataTexture(new Uint8Array([20, 8, 5, 255]), 1, 1); blank.needsUpdate = true;
@@ -725,7 +727,19 @@ function bgTex(i) {
   i = Math.max(0, Math.min(BG_PHOTOS.length - 1, i));
   if (!texCache[i]) {
     texCache[i] = { tex: null };
-    texLoader.load(BG_PHOTOS[i], (t) => { t.colorSpace = THREE.SRGBColorSpace; t.minFilter = THREE.LinearMipmapLinearFilter; texCache[i].tex = t; });
+    if (BG_WEBM[i]) {
+      const v = document.createElement('video');
+      const mp4 = v.canPlayType('video/mp4; codecs="avc1.4D401F"');
+      Object.assign(v, { src: mp4 ? BG_PHOTOS[i] : BG_WEBM[i], muted: true, loop: true, playsInline: true, preload: 'auto' });
+      v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+      v.addEventListener('loadeddata', () => {
+        const t = new THREE.VideoTexture(v); t.colorSpace = THREE.SRGBColorSpace; t.minFilter = THREE.LinearFilter;
+        texCache[i].tex = t; texCache[i].video = v;
+      }, { once: true });
+      v.load();
+    } else {
+      texLoader.load(BG_PHOTOS[i], (t) => { t.colorSpace = THREE.SRGBColorSpace; t.minFilter = THREE.LinearMipmapLinearFilter; texCache[i].tex = t; });
+    }
   }
   return texCache[i].tex;
 }
@@ -768,8 +782,15 @@ function updateBackdrop(i, e, t) {
   const a = bgTex(i), b = bgTex(i + 1); bgTex(i + 2);
   const ta = a || blank, tb = b || a || blank;
   bgMat.uniforms.uA.value = ta; bgMat.uniforms.uB.value = tb;
-  bgMat.uniforms.uAspA.value = ta.image && ta.image.width ? ta.image.width / ta.image.height : 1.5;
-  bgMat.uniforms.uAspB.value = tb.image && tb.image.width ? tb.image.width / tb.image.height : 1.5;
+  const asp = (tx) => { const im = tx.image; if (!im) return 1.5; const w = im.videoWidth || im.width, h = im.videoHeight || im.height; return w && h ? w / h : 1.5; };
+  bgMat.uniforms.uAspA.value = asp(ta); bgMat.uniforms.uAspB.value = asp(tb);
+  // solo se reproducen los vídeos visibles; en las grabaciones el reloj controlado marca el fotograma
+  Object.entries(texCache).forEach(([k, c]) => {
+    const v = c.video; if (!v) return;
+    const on = (+k === i) || (+k === i + 1 && e > 0.01);
+    if (window.__driveVideo) { v.pause(); if (on && v.duration) v.currentTime = (t * (reduceMotion ? 4 : 1)) % v.duration; }
+    else if (on && v.paused) v.play().catch(() => {}); else if (!on && !v.paused) v.pause();
+  });
   bgMat.uniforms.uMix.value = e; bgMat.uniforms.uTime.value = t;
   bgMat.uniforms.uScreen.value = innerWidth / innerHeight;
   bgMat.uniforms.uMouse.value.set(mouse.sx, -mouse.sy);
@@ -840,6 +861,7 @@ function frame() {
   timeMats.forEach((m) => { m.uniforms.uTime.value = t; });
   updateCamera(dt, t);
   billboards.forEach((b) => b.quaternion.copy(camera.quaternion));
+  if (window.__driveVideo) document.querySelectorAll('.hs-card video').forEach((v) => { v.pause(); if (v.duration) v.currentTime = t % v.duration; });
   composer.render();
 }
 { const pt = isPortrait(); layoutFns.forEach((f) => f(pt)); }

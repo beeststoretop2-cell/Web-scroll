@@ -418,3 +418,9 @@ body:not(.loaded) .hero .reveal{opacity:0}
 @media (max-width:760px){.rev-sum{padding-left:var(--gut)}}
 .rev-track{align-items:flex-start}
 .rev.text-only cite{margin-top:14px}
+.rev-photos{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:0 var(--gutr) 18px calc(var(--gut) + clamp(0px,5vw,90px))}
+.rev-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;border:1px solid var(--line);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.rev-photos img:hover{transform:scale(1.03)}
+@media (max-width:760px){.rev-photos{grid-template-columns:repeat(6,42vw);overflow-x:auto;padding-left:var(--gut);scrollbar-width:none}}
+.rev-track{scroll-padding-left:calc(var(--gut) + clamp(0px,5vw,90px))}
+@media (max-width:760px){.rev-track{scroll-padding-left:var(--gut)}}

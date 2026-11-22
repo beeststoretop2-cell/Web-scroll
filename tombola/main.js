@@ -338,13 +338,8 @@ const photoTex = (url) => { const t = new THREE.TextureLoader().load(url); t.col
   scene.add(oven);
   layoutFns.push((pt) => { oven.position.x = P[0].x + (pt ? 0 : 1.9); LOOK[0].x = pt ? 0 : 1.2; });
   const tex = photoTex('img/real/horno-real.png');
-  const W = 5.9, H = W * 840 / 900;
+  const W = 5.4, H = W * 907 / 900;
   const card = new THREE.Group(); oven.add(card);
-  // relieve: varias capas oscurecidas detrás de la foto, como un objeto recortado con grosor
-  for (let k = 6; k >= 1; k--) {
-    const m = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.35, color: new THREE.Color(0.16 + 0.03 * (6 - k), 0.06, 0.04), side: THREE.DoubleSide, toneMapped: false });
-    const l = new THREE.Mesh(new THREE.PlaneGeometry(W, H), m); l.position.z = -k * 0.045; card.add(l);
-  }
   const front = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.FrontSide, color: new THREE.Color(1.08, 1.04, 1.02), toneMapped: false }));
   card.add(front);
   // halo de brasa detrás y luz que parpadea en la mirilla del fuego
@@ -360,9 +355,10 @@ const photoTex = (url) => { const t = new THREE.TextureLoader().load(url); t.col
     const o = RANDOM_ING[i % RANDOM_ING.length](); oven.add(o); floatAround(o, new THREE.Vector3(x, y, z), 0.3, 0.6);
   });
   animated.push((t) => {
-    card.rotation.y = -0.28 + Math.sin(t * 0.45) * 0.26;
-    card.rotation.x = Math.sin(t * 0.33) * 0.04;
-    card.position.y = Math.sin(t * 0.8) * 0.18;
+    card.quaternion.copy(camera.quaternion);            // siempre de frente: se ve como el horno real, no como una lámina
+    card.rotateZ(Math.sin(t * 0.5) * 0.025);
+    card.position.y = Math.sin(t * 0.8) * 0.16;
+    card.scale.setScalar(1 + Math.sin(t * 0.6) * 0.012);
     shadow.scale.setScalar(1 - Math.sin(t * 0.8) * 0.05);
     const f = 0.85 + Math.sin(t * 13) * 0.08 + Math.sin(t * 7.3) * 0.07;
     fire.scale.setScalar(f); fire.material.opacity = f;
@@ -375,16 +371,19 @@ const dough = { k: 1, target: 1 };
 {
   const g = new THREE.Group(); g.position.copy(P[1]).add(new THREE.Vector3(-1.6, -1.4, 0)); scene.add(g);
   layoutFns.push((pt) => { g.position.x = P[1].x + (pt ? 0 : -1.6); });
-  // bolas de masa reales (fotograma del vídeo de Tómbola) que crecen con el reloj de fermentación
-  const ballTex = photoTex('img/real/bola-masa.png');
+  // bolas de masa en 3D con la textura real de la masa de Tómbola (sacada de su vídeo)
+  const doughTex = photoTex('img/real/masa-textura.jpg');
+  const doughMat = new THREE.MeshPhysicalMaterial({ map: doughTex, color: 0xeadbc4, roughness: 0.8, sheen: 0.6, sheenRoughness: 0.7, sheenColor: new THREE.Color(0xfff2dc), envMapIntensity: 0.45 });
+  const domeGeo = new THREE.SphereGeometry(0.62, 64, 40, 0, TAU, 0, Math.PI * 0.62);
   const balls = [];
-  const spots = [[-2.8, 0.1, 0.9, 0.85], [0, -0.1, 1.5, 1.0], [2.8, 0.2, 0.7, 0.8], [-1.5, 1.3, -1.3, 0.7], [1.5, 1.4, -1.1, 0.72], [3.9, 1.7, -2.0, 0.6]];
+  const spots = [[-2.2, 0, 0.6, 1.0], [0, 0, 1.0, 1.08], [2.2, 0, 0.5, 0.96], [-1.1, 0, -1.2, 0.92], [1.15, 0, -1.1, 0.95], [3.2, 0, -1.7, 0.85]];
+  const tray = new THREE.Mesh(new THREE.CylinderGeometry(4.6, 4.6, 0.06, 64), new THREE.MeshStandardMaterial({ color: 0x2a2624, roughness: 0.35, metalness: 0.6 }));
+  tray.scale.z = 0.62; tray.position.y = -0.04; g.add(tray);
   spots.forEach(([x, y, z, s], i) => {
-    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: ballTex, transparent: true, toneMapped: false, color: new THREE.Color(1.05, 1.0, 0.95) }));
-    sp.position.set(x, y, z); sp.userData = { s, y, ph: i * 1.3 }; g.add(sp); balls.push(sp);
-    const sh = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.8), new THREE.MeshBasicMaterial({ map: glowSprite, color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false }));
-    sh.rotation.x = -Math.PI / 2; sh.position.set(x, y - 0.9, z); g.add(sh); sp.userData.sh = sh;
+    const b = new THREE.Mesh(domeGeo, doughMat); b.position.set(x, y, z); b.rotation.y = i * 1.7;
+    b.userData = { s, ph: i * 1.3 }; g.add(b); balls.push(b);
   });
+  const warm = new THREE.PointLight(0xffd9a8, 9, 12, 1.6); warm.position.set(-2, 4, 3); g.add(warm);
   // indicador circular de horas
   const ringG = new THREE.Group(); ringG.position.set(0, 3.7, -2.6); ringG.scale.setScalar(0.8); g.add(ringG);
   ringG.add(new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.03, 8, 160), new THREE.MeshBasicMaterial({ color: 0x4a2a1a, transparent: true, opacity: 0.6 })));
@@ -420,10 +419,9 @@ const dough = { k: 1, target: 1 };
     arcMat.uniforms.uK.value = Math.max(0.002, k);
     const h = Math.round(k * 48); if (h !== lastH) { lastH = h; drawHour(h); }
     balls.forEach((b) => {
-      const u = b.userData, sc = (0.65 + k * 0.6) * u.s * (1 + Math.sin(t * 1.1 + u.ph) * 0.015);
-      b.scale.set(sc * 1.95, sc * 1.6 * (0.92 + k * 0.08), 1);
-      b.position.y = u.y + Math.sin(t * 0.7 + u.ph) * 0.12 + k * 0.25;
-      u.sh.scale.setScalar(0.7 + k * 0.6);
+      const u = b.userData, sc = (0.72 + k * 0.55) * u.s;
+      b.scale.set(sc * (1 + k * 0.1), sc * (0.62 + k * 0.32), sc * (1 + k * 0.1));   // la masa sube y se redondea al fermentar
+      b.position.y = Math.sin(t * 1.1 + u.ph) * 0.006 * k;
     });
     ringG.lookAt(camera.position);
   });
@@ -523,50 +521,21 @@ const dough = { k: 1, target: 1 };
   floorGlow.rotation.x = -Math.PI / 2; floorGlow.position.set(0, -1.65, P[4].z - 3); scene.add(floorGlow);
 }
 
-/* ---------------- 5 · vino y cerveza ---------------- */
+/* ---------------- 5 · bebidas: foto real del brindis en Tómbola ---------------- */
 {
-  const g = new THREE.Group(); g.position.copy(P[5]).add(new THREE.Vector3(0, -1.6, 0)); scene.add(g);
-  const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.04, metalness: 0, transparent: true, opacity: 0.15, clearcoat: 1, envMapIntensity: 1.1, side: THREE.DoubleSide, depthWrite: false });
-  const lathe = (pts, mat, seg = 64) => new THREE.Mesh(new THREE.LatheGeometry(pts.map(([x, y]) => new THREE.Vector2(x, y)), seg), mat);
-  // copa
-  const wine = new THREE.Group(); wine.position.set(-0.9, 0, 0.7); g.add(wine);
-  wine.add(lathe([[0, 0], [0.62, 0], [0.62, 0.03], [0.1, 0.07], [0.05, 0.12], [0.045, 1.0], [0.09, 1.08], [0.38, 1.2], [0.6, 1.48], [0.66, 1.78], [0.6, 2.18], [0.52, 2.42]], glassMat));
-  const wineLiquid = lathe([[0, 1.1], [0.36, 1.2], [0.56, 1.45], [0.62, 1.68], [0, 1.68]],
-    new THREE.MeshPhysicalMaterial({ color: 0x7a0d22, roughness: 0.12, clearcoat: 1, transparent: true, opacity: 0.93, emissive: 0x3a0410, emissiveIntensity: 0.6 }));
-  wine.add(wineLiquid);
-  // botella
-  const bottle = new THREE.Group(); bottle.position.set(0.7, 0, -0.9); g.add(bottle);
-  bottle.add(lathe([[0, 0], [0.48, 0], [0.5, 0.06], [0.5, 1.9], [0.44, 2.2], [0.22, 2.6], [0.15, 2.75], [0.15, 3.35], [0.18, 3.4], [0.18, 3.52], [0, 3.52]],
-    new THREE.MeshPhysicalMaterial({ color: 0x163d22, roughness: 0.08, metalness: 0.2, clearcoat: 1, envMapIntensity: 2 })));
-  const label = new THREE.Mesh(new THREE.CylinderGeometry(0.505, 0.505, 0.85, 48, 1, true, -1.1, 2.2), new THREE.MeshStandardMaterial({
-    roughness: 0.8,
-    map: canvasTex(512, 256, (c, w, h) => {
-      c.fillStyle = '#f3e6cf'; c.fillRect(0, 0, w, h); c.strokeStyle = '#8a1a24'; c.lineWidth = 6; c.strokeRect(14, 14, w - 28, h - 28);
-      c.fillStyle = '#8a1a24'; c.textAlign = 'center'; c.font = 'italic 82px "Instrument Serif", Georgia, serif'; c.fillText('Tómbola', w / 2, h / 2 + 4);
-      c.font = '600 22px "JetBrains Mono", monospace'; c.fillStyle = '#3a2a20'; c.fillText('BURGOS', w / 2, h / 2 + 56);
-    }),
-  }));
-  label.position.y = 1.0; bottle.add(label);
-  // caña de cerveza
-  const beer = new THREE.Group(); beer.position.set(-2.6, 0, -0.3); g.add(beer);
-  beer.add(lathe([[0, 0], [0.34, 0], [0.34, 0.06], [0.42, 1.75], [0.44, 1.8]], glassMat));
-  beer.add(lathe([[0, 0.08], [0.32, 0.08], [0.395, 1.42], [0, 1.42]], new THREE.MeshPhysicalMaterial({ color: 0xe89a1c, roughness: 0.1, transparent: true, opacity: 0.88, emissive: 0x6a3a00, emissiveIntensity: 0.5, clearcoat: 1 })));
-  beer.add(lathe([[0, 1.42], [0.395, 1.42], [0.41, 1.62], [0.32, 1.7], [0, 1.72]], new THREE.MeshStandardMaterial({ color: 0xfff8ec, roughness: 1 })));
-  const bubbles = makePoints(60, new THREE.Vector3(0.45, 1.25, 0.45), new THREE.Vector3(0, 0.75, 0), { size: 1.1, rise: 0.5, color: 0xfff0c0, boost: 1.6, additive: true });
-  beer.add(bubbles);
-  // tabla con uvas y una porción
-  const plank = new THREE.Mesh(new THREE.BoxGeometry(6.4, 0.18, 3), wood); plank.position.y = -0.1; g.add(plank);
-  const grapeMat = new THREE.MeshPhysicalMaterial({ color: 0x3a0f2e, roughness: 0.25, clearcoat: 1, sheen: 0.5, sheenColor: new THREE.Color(0x8a6aa0) });
-  for (let i = 0; i < 14; i++) { const gr = new THREE.Mesh(new THREE.SphereGeometry(0.15, 16, 12), grapeMat); gr.position.set(1.6 + (i % 4) * 0.24 + rr(-0.05, 0.05), 0.15 + Math.floor(i / 4) * 0.17, -0.9 + (i % 3) * 0.2); g.add(gr); }
-  const slice = makeSlices('margarita', 1.3, 8); slice.userData.slices.forEach((s, i) => { if (i > 1) s.visible = false; }); slice.position.set(1.4, 0.05, 0.6); slice.rotation.y = 2.2; g.add(slice);
-  const back = new THREE.PointLight(0xff2d48, 26, 9, 1.6); back.position.set(-1.6, 2.2, -1.8); g.add(back);
-  const warm = new THREE.PointLight(0xffb070, 14, 9, 1.6); warm.position.set(2.5, 3, 2); g.add(warm);
-  const spin = new THREE.Group(); // todo el bodegón gira despacio
+  const g = new THREE.Group(); g.position.copy(P[5]).add(new THREE.Vector3(-0.6, 0.4, 0)); scene.add(g);
+  const tex = photoTex('img/real/brindis-card.jpg'); const W = 5.6, H = W * 960 / 1100;
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
+  const frame = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.16, H + 0.16), new THREE.MeshBasicMaterial({ color: 0xf3e6cf, toneMapped: false }));
+  frame.position.z = -0.02; card.add(frame); g.add(card);
+  const glowB = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, H * 1.9), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(0xffa040).multiplyScalar(0.6), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  glowB.position.z = -0.4; card.add(glowB);
+  const bubbles = makePoints(80, new THREE.Vector3(6, 5, 2), new THREE.Vector3(0, 0, 0.8), { size: 1.4, rise: 0.5, color: 0xffe2a0, boost: 1.6, additive: true });
+  g.add(bubbles);
   animated.push((t) => {
-    g.rotation.y = Math.sin(t * 0.25) * 0.35;
-    wineLiquid.rotation.y = t; wine.rotation.z = Math.sin(t * 0.9) * 0.02;
+    card.quaternion.copy(camera.quaternion); card.rotateZ(-0.03 + Math.sin(t * 0.5) * 0.02);
+    card.position.y = Math.sin(t * 0.7) * 0.14;
   });
-  void spin;
 }
 
 /* ---------------- 6 · neón real "Viva la pizza" y la caja oficial de Tómbola (fotos reales) ---------------- */
@@ -644,7 +613,7 @@ addEventListener('pointermove', (e) => { mouse.x = e.clientX / innerWidth - 0.5;
 /* ---------------- fondo: fotos reales de Tómbola, virado a dos tonos de brasa, Ken Burns ---------------- */
 // Fondos: fotos reales del local y del equipo (Instagram de Tómbola)
 // Vídeos reales (Instagram de Tómbola) en las escenas clave; fotos reales en el resto
-const BG_PHOTOS = ['video/horno.mp4', 'video/masa.mp4', 'video/sabor.mp4', 'img/real/tombola.jpg', 'video/et.mp4', 'img/real/brindis.jpg', 'video/local.mp4'];
+const BG_PHOTOS = ['video/horno.mp4', 'video/masa.mp4', 'video/sabor.mp4', 'img/real/tombola.jpg', 'video/et.mp4', 'img/real/iberica.jpg', 'video/local.mp4'];
 const BG_WEBM = { 0: 'video/horno.webm', 1: 'video/masa.webm', 2: 'video/sabor.webm', 4: 'video/et.webm', 6: 'video/local.webm' };
 const texLoader = new THREE.TextureLoader();
 const texCache = {};

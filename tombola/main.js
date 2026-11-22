@@ -351,9 +351,6 @@ const photoTex = (url) => { const t = new THREE.TextureLoader().load(url); t.col
   shadow.rotation.x = -Math.PI / 2; shadow.position.y = -H / 2 - 0.9; oven.add(shadow);
   const sparks = makePoints(isMobile ? 70 : 140, new THREE.Vector3(5, 6, 2), new THREE.Vector3(0, 2.2, 0.6), { size: 2.6, rise: 0.9, color: 0xff8a3a, boost: 2.6, additive: true });
   oven.add(sparks);
-  [[4.6, 3.0, 1.2], [5.4, 0.6, -0.8], [4.4, -1.6, 1.8], [-1.5, 4.6, -2.5], [5.6, 4.6, -1]].forEach(([x, y, z], i) => {
-    const o = RANDOM_ING[i % RANDOM_ING.length](); oven.add(o); floatAround(o, new THREE.Vector3(x, y, z), 0.3, 0.6);
-  });
   animated.push((t) => {
     card.quaternion.copy(camera.quaternion);            // siempre de frente: se ve como el horno real, no como una lámina
     card.rotateZ(Math.sin(t * 0.5) * 0.025);
@@ -366,159 +363,29 @@ const photoTex = (url) => { const t = new THREE.TextureLoader().load(url); t.col
   });
 }
 
-/* ---------------- 1 · la masa (48 h) ---------------- */
-const dough = { k: 1, target: 1 };
-{
-  const g = new THREE.Group(); g.position.copy(P[1]).add(new THREE.Vector3(-1.6, -1.4, 0)); scene.add(g);
-  layoutFns.push((pt) => { g.position.x = P[1].x + (pt ? 0 : -1.6); });
-  // bolas de masa en 3D con la textura real de la masa de Tómbola (sacada de su vídeo)
-  const doughTex = photoTex('img/real/masa-textura.jpg');
-  const doughMat = new THREE.MeshPhysicalMaterial({ map: doughTex, color: 0xeadbc4, roughness: 0.8, sheen: 0.6, sheenRoughness: 0.7, sheenColor: new THREE.Color(0xfff2dc), envMapIntensity: 0.45 });
-  const domeGeo = new THREE.SphereGeometry(0.62, 64, 40, 0, TAU, 0, Math.PI * 0.62);
-  const balls = [];
-  const spots = [[-2.2, 0, 0.6, 1.0], [0, 0, 1.0, 1.08], [2.2, 0, 0.5, 0.96], [-1.1, 0, -1.2, 0.92], [1.15, 0, -1.1, 0.95], [3.2, 0, -1.7, 0.85]];
-  const tray = new THREE.Mesh(new THREE.CylinderGeometry(4.6, 4.6, 0.06, 64), new THREE.MeshStandardMaterial({ color: 0x2a2624, roughness: 0.35, metalness: 0.6 }));
-  tray.scale.z = 0.62; tray.position.y = -0.04; g.add(tray);
-  spots.forEach(([x, y, z, s], i) => {
-    const b = new THREE.Mesh(domeGeo, doughMat); b.position.set(x, y, z); b.rotation.y = i * 1.7;
-    b.userData = { s, ph: i * 1.3 }; g.add(b); balls.push(b);
-  });
-  const warm = new THREE.PointLight(0xffd9a8, 9, 12, 1.6); warm.position.set(-2, 4, 3); g.add(warm);
-  // indicador circular de horas
-  const ringG = new THREE.Group(); ringG.position.set(0, 3.7, -2.6); ringG.scale.setScalar(0.8); g.add(ringG);
-  ringG.add(new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.03, 8, 160), new THREE.MeshBasicMaterial({ color: 0x4a2a1a, transparent: true, opacity: 0.6 })));
-  const arcMat = new THREE.ShaderMaterial({
-    transparent: true, toneMapped: false, uniforms: { uK: { value: 1 } },
-    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
-    fragmentShader: `uniform float uK; varying vec2 vUv;
-      void main(){ float u = 1.0 - fract(vUv.x + 0.75); if (u > uK) discard;
-        vec3 c = mix(vec3(1.0,0.25,0.15), vec3(1.0,0.75,0.35), u); gl_FragColor = vec4(c*3.0, 1.0); }`,
-  });
-  ringG.add(new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.07, 10, 200), arcMat));
-  const hourCanvas = document.createElement('canvas'); hourCanvas.width = 512; hourCanvas.height = 256;
-  const hourTex = new THREE.CanvasTexture(hourCanvas); hourTex.colorSpace = THREE.SRGBColorSpace;
-  const hourLabel = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.1), new THREE.MeshBasicMaterial({ map: hourTex, transparent: true, toneMapped: false, color: new THREE.Color(1.6, 1.4, 1.2) }));
-  ringG.add(hourLabel);
-  let lastH = -1;
-  const drawHour = (h) => {
-    const c = hourCanvas.getContext('2d'); c.clearRect(0, 0, 512, 256);
-    c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillStyle = '#ffe6c4';
-    c.font = '800 150px "Archivo Variable", Archivo, Arial Black, sans-serif';
-    if ('fontStretch' in c) c.fontStretch = 'expanded';
-    const w = c.measureText(String(h)).width;
-    c.textAlign = 'left'; c.fillText(String(h), 256 - (w + 40) / 2, 120);
-    c.font = 'italic 90px "Instrument Serif", Georgia, serif'; c.fillStyle = '#ff9a5a'; c.fillText('h', 256 - (w + 40) / 2 + w + 6, 140);
-    hourTex.needsUpdate = true;
-  };
-  const flour = makePoints(isMobile ? 120 : 240, new THREE.Vector3(9, 5, 6), new THREE.Vector3(0, 2.4, 0), { size: 2.2, rise: 0.12, color: 0xfff4e4, boost: 1.4, alpha: 0.8 });
-  g.add(flour);
-  animated.push((t) => {
-    if (typeof window.__doughHour === 'number') dough.target = window.__doughHour / 48;
-    dough.k += (dough.target - dough.k) * 0.08;
-    const k = dough.k;
-    arcMat.uniforms.uK.value = Math.max(0.002, k);
-    const h = Math.round(k * 48); if (h !== lastH) { lastH = h; drawHour(h); }
-    balls.forEach((b) => {
-      const u = b.userData, sc = (0.72 + k * 0.55) * u.s;
-      b.scale.set(sc * (1 + k * 0.1), sc * (0.62 + k * 0.32), sc * (1 + k * 0.1));   // la masa sube y se redondea al fermentar
-      b.position.y = Math.sin(t * 1.1 + u.ph) * 0.006 * k;
-    });
-    ringG.lookAt(camera.position);
-  });
+/* ---------------- foto real enmarcada y flotando (mismo estilo en todas las escenas) ---------------- */
+function framedPhoto(url, w, h) {
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: photoTex(url), toneMapped: false }));
+  const fr = new THREE.Mesh(new THREE.PlaneGeometry(w + 0.14, h + 0.14), new THREE.MeshBasicMaterial({ color: 0xf3e6cf, toneMapped: false }));
+  fr.position.z = -0.02; card.add(fr);
+  const glowM = new THREE.Mesh(new THREE.PlaneGeometry(w * 1.9, h * 1.8), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(0xff8a40).multiplyScalar(0.45), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  glowM.position.z = -0.3; card.add(glowM);
+  return card;
+}
+function floatCard(card, base, tilt, ph) {
+  animated.push((t) => { card.quaternion.copy(camera.quaternion); card.rotateZ(tilt + Math.sin(t * 0.5 + ph) * 0.015); card.position.set(base.x, base.y + Math.sin(t * 0.7 + ph) * 0.13, base.z); });
 }
 
-/* ---------------- 2 · el sabor: porción y productos ---------------- */
+/* ---------------- 1 · la masa: foto real de las bolas fermentando ---------------- */
+{
+  const g = new THREE.Group(); g.position.copy(P[1]); scene.add(g);
+  const c = framedPhoto('img/real/bolas-reales.jpg', 4.6, 4.6 * 746 / 1000); g.add(c); floatCard(c, new THREE.Vector3(-2.4, 0.6, 0), -0.04, 0);
+}
+
+/* ---------------- 2 · el sabor: foto real de la Burratina ---------------- */
 {
   const g = new THREE.Group(); g.position.copy(P[2]); scene.add(g);
-  const sl = makeSlices('burratina', 2.4, 6);
-  sl.userData.slices.forEach((s, i) => { if (i) s.visible = false; });
-  const slice = sl.userData.slices[0];
-  const holder = new THREE.Group(); holder.add(sl); sl.position.set(-0.2, 0, -1.1);
-  holder.rotation.set(0.55, 0.3, -0.25); g.add(holder);
-  const rings = [];
-  const make = [() => makeTomato(1.3), () => makeLeaf(1.1), () => makeMozz(1.1), () => makeShroom(1.2), () => makeTruffle(1.1), () => makeOlive(1.4),
-    () => makePepperRing(0xd4281c, 1.2), () => makeLeaf(0.9), () => makeTomato(1), () => makeMozz(1.4), () => makePepperRing(0xf0c419, 1.1), () => makeShroom(1)];
-  [[3.3, 0.3, 6, 0.18], [4.6, -0.6, 6, -0.12]].forEach(([rad, y, cnt, sp], ri) => {
-    const ring = new THREE.Group(); ring.position.y = y; ring.rotation.x = ri ? -0.35 : 0.28; g.add(ring);
-    for (let i = 0; i < cnt; i++) {
-      const o = make[(ri * cnt + i) % make.length](); const a = (i / cnt) * TAU + ri * 0.4;
-      o.position.set(Math.cos(a) * rad, Math.sin(i * 2.1) * 0.5, Math.sin(a) * rad); o.userData.spin = new THREE.Vector3(rnd(), rnd(), rnd());
-      ring.add(o);
-    }
-    rings.push([ring, sp]);
-  });
-  // burrata grande
-  const burrata = makeMozz(2.2); burrata.position.set(2.6, 2.2, -1.5); g.add(burrata);
-  const knot = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.4, 16), mozzMat); knot.position.set(2.6, 2.95, -1.5); g.add(knot);
-  const l1 = makeLeaf(1.6); l1.position.set(2.2, 2.7, -1.2); l1.rotation.set(-0.6, 0.4, 0.8); g.add(l1);
-  const oil = new THREE.PointLight(0xffb060, 12, 10, 1.6); oil.position.set(0, 3, 3); g.add(oil);
-  animated.push((t) => {
-    holder.rotation.y = 0.3 + Math.sin(t * 0.4) * 0.35;
-    holder.position.y = Math.sin(t * 0.9) * 0.15;
-    slice.position.y = 0;
-    rings.forEach(([r, sp]) => { r.rotation.y = t * sp; r.children.forEach((o) => { o.rotation.x += o.userData.spin.x * 0.01; o.rotation.y += o.userData.spin.y * 0.012; }); });
-    burrata.position.y = 2.2 + Math.sin(t * 0.7) * 0.18; knot.position.y = burrata.position.y + 0.75;
-  });
-}
-
-/* ---------------- 3 · carta: pizza en porciones y bolas de tómbola ---------------- */
-{
-  const g = new THREE.Group(); g.position.copy(P[3]).add(new THREE.Vector3(0, -0.6, 0)); scene.add(g);
-  const peel = new THREE.Group(); g.add(peel);
-  peel.add(new THREE.Mesh(new THREE.CylinderGeometry(3.1, 3.1, 0.12, 64), wood));
-  const handle = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.12, 3.4), wood); handle.position.z = 4.5; peel.add(handle);
-  const pz = makeSlices('pepperoni', 2.65, 8); pz.position.y = 0.1; peel.add(pz);
-  // bolas de tómbola numeradas
-  const nums = [7, 18, 1, 24, 15, 33, 9, 12, 21, 3, 27, 17];
-  const balls = nums.map((n, i) => {
-    const tex = canvasTex(256, 128, (c, w, h) => {
-      c.fillStyle = '#fbf3e6'; c.fillRect(0, 0, w, h);
-      c.fillStyle = i % 3 === 2 ? '#2f8a3c' : '#c8213a'; c.fillRect(0, h * 0.3, w, h * 0.4);
-      c.fillStyle = '#fbf3e6'; c.beginPath(); c.ellipse(w * 0.25, h / 2, 26, 24, 0, 0, TAU); c.fill(); c.beginPath(); c.ellipse(w * 0.75, h / 2, 26, 24, 0, 0, TAU); c.fill();
-      c.fillStyle = '#1b0f0a'; c.font = '800 30px Archivo, Arial Black, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
-      c.fillText(n, w * 0.25, h / 2 + 2); c.fillText(n, w * 0.75, h / 2 + 2);
-    });
-    const b = new THREE.Mesh(new THREE.SphereGeometry(0.42, 32, 24), new THREE.MeshPhysicalMaterial({ map: tex, roughness: 0.2, clearcoat: 1, clearcoatRoughness: 0.05 }));
-    b.userData = { a: (i / nums.length) * TAU, r: 4.3 + (i % 3) * 0.55, y: 0.6 + Math.sin(i * 1.7) * 1.1, s: 0.18 + (i % 4) * 0.03 };
-    g.add(b); return b;
-  });
-  const glowRing = new THREE.Mesh(new THREE.TorusGeometry(3.45, 0.03, 8, 200).rotateX(Math.PI / 2), glow(EMBER, 3)); glowRing.position.y = 0.02; g.add(glowRing);
-  const top = new THREE.PointLight(0xffd2a0, 22, 12, 1.5); top.position.set(0, 4, 1); g.add(top);
-  animated.push((t) => {
-    peel.rotation.y = t * 0.12;
-    const open = 0.18 + Math.max(0, Math.sin(t * 0.8)) * 0.35;
-    pz.userData.slices.forEach((s, i) => { s.position.copy(s.userData.dir).multiplyScalar(open); s.position.y = Math.max(0, Math.sin(t * 0.8 - i * 0.5)) * 0.15; });
-    balls.forEach((b) => { const u = b.userData, a = u.a + t * u.s; b.position.set(Math.cos(a) * u.r, u.y + Math.sin(t + u.a * 3) * 0.3, Math.sin(a) * u.r); b.rotation.x = t * 0.7 + u.a; b.rotation.y = t * 0.5; });
-  });
-}
-
-/* ---------------- arcos de luz entre escenas (la cámara los atraviesa) ---------------- */
-{
-  const tmp = new THREE.Vector3(), tan = new THREE.Vector3();
-  const nScenes = P.length - 1;
-  const ledGeo = new THREE.BoxGeometry(0.12, 0.12, 0.3);
-  const cols = [EMBER, NEON, CREAM, EMBER, BASIL, NEON];
-  for (let i = 0; i < nScenes; i++) {
-    [0.42, 0.6].forEach((f, j) => {
-      camCurve.getPoint((i + f) / nScenes, tmp); camCurve.getTangent((i + f) / nScenes, tan);
-      const gate = new THREE.Group(); gate.position.copy(tmp); gate.lookAt(tmp.clone().add(tan));
-      const col = cols[(i * 2 + j) % cols.length];
-      const r = 4.2 + j * 0.5;
-      const gm = glow(col, 3.2), lm = glow(col, 2.2); gm.transparent = lm.transparent = true; gm.depthWrite = lm.depthWrite = false;
-      gate.add(new THREE.Mesh(new THREE.TorusGeometry(r, 0.035, 8, 180), gm));
-      const leds = new THREE.InstancedMesh(ledGeo, lm, 36); const m = new THREE.Matrix4();
-      for (let k = 0; k < 36; k++) { const a = (k / 36) * TAU; m.makeRotationZ(a); m.setPosition(Math.cos(a) * (r + 0.25), Math.sin(a) * (r + 0.25), 0); leds.setMatrixAt(k, m); }
-      gate.add(leds);
-      scene.add(gate);
-      animated.push((t) => {
-        gate.rotation.z = t * (j ? 0.15 : -0.12);
-        const d = camera.position.distanceTo(gate.position), o = (1 - Math.min(1, Math.max(0, (d - 3) / 8))) * Math.min(1, travelK * 1.6);
-        gm.opacity = lm.opacity = o; gate.visible = o > 0.01;
-      });
-    });
-  }
-  const floorGlow = new THREE.Mesh(new THREE.PlaneGeometry(9, 34), new THREE.MeshBasicMaterial({ color: 0x3a1408, transparent: true, opacity: 0.5 }));
-  floorGlow.rotation.x = -Math.PI / 2; floorGlow.position.set(0, -1.65, P[4].z - 3); scene.add(floorGlow);
+  const c = framedPhoto('img/real/burratina-card.jpg', 4.4, 3.3); g.add(c); floatCard(c, new THREE.Vector3(1.4, 0.4, 0), 0.04, 1);
 }
 
 /* ---------------- 5 · bebidas: foto real del brindis en Tómbola ---------------- */
@@ -540,45 +407,6 @@ const dough = { k: 1, target: 1 };
     card.quaternion.copy(camera.quaternion); card.rotateZ(-0.05 + Math.sin(t * 0.5) * 0.02); card.position.x = 0.6;
     card.position.y = 0.5 + Math.sin(t * 0.7) * 0.14;
     card2.quaternion.copy(camera.quaternion); card2.rotateZ(0.05); card2.position.y = -0.9 + Math.sin(t * 0.6 + 1) * 0.12;
-  });
-}
-
-/* ---------------- 6 · neón real "Viva la pizza" y la caja oficial de Tómbola (fotos reales) ---------------- */
-{
-  const g = new THREE.Group(); g.position.copy(P[6]); scene.add(g);
-  layoutFns.push((pt) => { g.position.x = P[6].x + (pt ? -2.5 : 0); });
-  // tarjeta flotante con relieve hecha a partir de una foto (igual que el horno)
-  const photoCard = (url, w, h, rim) => {
-    const tex = photoTex(url), grp = new THREE.Group();
-    for (let k = 5; k >= 1; k--) {
-      const m = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.3, color: new THREE.Color(rim).multiplyScalar(0.25 + 0.05 * (5 - k)), side: THREE.DoubleSide, toneMapped: false });
-      const l = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); l.position.z = -k * 0.04; grp.add(l);
-    }
-    const front = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false }));
-    grp.add(front); grp.userData.front = front; return grp;
-  };
-  // neón real: la foto del letrero del local, enmarcada y con su resplandor
-  const sign = photoCard('img/real/neon2.jpg', 6.4, 6.4 * 335 / 668, 0x2a0a06);
-  sign.position.set(2.9, 3.1, -3.2); g.add(sign);
-  const frame = new THREE.Mesh(new THREE.PlaneGeometry(6.62, 6.4 * 335 / 668 + 0.22), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff5a2e).multiplyScalar(1.6), toneMapped: false }));
-  frame.position.z = -0.24; sign.add(frame);
-  const signGlow = new THREE.Mesh(new THREE.PlaneGeometry(12, 7), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(0xff3a1a).multiplyScalar(0.9), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
-  signGlow.position.z = -0.5; sign.add(signGlow);
-  const neonMat = sign.userData.front.material; neonMat.color = new THREE.Color(1.25, 1.2, 1.2);
-  // caja oficial: pila de cajas reales de Tómbola (33 cm, www.pizzeriatombolaburgos.com)
-  const boxW = 2.6, box = photoCard('img/real/caja-real.png', boxW, boxW * 724 / 650, 0x8a6a40);
-  box.position.set(3.4, -1.3, 1.2); g.add(box);
-  const boxShadow = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.1), new THREE.MeshBasicMaterial({ map: glowSprite, color: 0x000000, transparent: true, opacity: 0.75, depthWrite: false }));
-  boxShadow.rotation.x = -Math.PI / 2; boxShadow.position.set(3.4, -3.0, 1.2); g.add(boxShadow);
-  const steam = makePoints(50, new THREE.Vector3(2.4, 3, 1.5), new THREE.Vector3(3.4, 1.0, 1.2), { size: 4, rise: 0.4, color: 0xfff2e2, boost: 0.8, alpha: 0.3 });
-  g.add(steam);
-  [[5.6, 0.2, 0.5], [5.0, 2.4, -1.4], [-0.6, -0.6, 1.8]].forEach(([x, y, z], i) => { const o = RANDOM_ING[(i * 2) % RANDOM_ING.length](); g.add(o); floatAround(o, new THREE.Vector3(x, y, z), 0.25, 0.5); });
-  animated.push((t) => {
-    sign.rotation.y = -0.18 + Math.sin(t * 0.35) * 0.12; sign.position.y = 3.1 + Math.sin(t * 0.6) * 0.1;
-    box.rotation.y = 0.35 + Math.sin(t * 0.5) * 0.3; box.rotation.z = Math.sin(t * 0.7) * 0.04;
-    box.position.y = -1.3 + Math.sin(t * 0.9) * 0.18; boxShadow.scale.setScalar(1 - Math.sin(t * 0.9) * 0.06);
-    const flick = Math.random() > 0.985 ? 0.55 : 1;
-    neonMat.color.setScalar(1.22 * flick); signGlow.material.opacity = 0.8 * flick;
   });
 }
 

@@ -166,7 +166,7 @@
     (function tick() {
       const it = i < steps - 1 ? pool[Math.floor(Math.random() * pool.length)] : pick;
       const fin = i >= steps - 1 && PHOTO[it[1]];
-      result.innerHTML = `${fin ? `<img class="t-photo" src="img/real/${PHOTO[it[1]]}-card.jpg" alt="Pizza ${it[2]}">` : ''}<span class="ball mono">${String(it[1]).padStart(2, '0')}</span><div><span class="mono">${i < steps - 1 ? 'Girando la tómbola…' : 'Te ha tocado'}</span><b>${it[2]}</b>${i < steps - 1 ? '' : `<small>${it[3]} · ${it[4]} €</small>`}</div>${i < steps - 1 ? '' : `<button class="btn btn-sm" data-add="${it[1]}"><span>Añadir al pedido</span></button>`}`;
+      result.innerHTML = `${fin ? `<img class="t-photo" src="img/real/${PHOTO[it[1]]}-card.jpg" alt="Pizza ${it[2]}">` : ''}<span class="ball mono">${String(it[1]).padStart(2, '0')}</span><div><span class="mono">${i < steps - 1 ? 'E.T. está girando la tómbola…' : 'E.T. ha elegido por ti'}</span><b>${it[2]}</b>${i < steps - 1 ? '' : `<small>${it[3]} · ${it[4]} €</small>`}</div>${i < steps - 1 ? '' : `<button class="btn btn-sm" data-add="${it[1]}"><span>Añadir al pedido</span></button>`}`;
       i++;
       if (i < steps) setTimeout(tick, 40 + i * i * 0.55);
       else {

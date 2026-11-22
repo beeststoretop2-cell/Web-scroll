@@ -42,6 +42,11 @@
     ['sugerencias', 33, 'Marquesita', 'Nata, albahaca, mozzarella, tomate seco, burrata, parmesano y pesto', 18],
   ];
   const CAT = { clasicas: 'Clásica', especiales: 'Especial', gourmet: 'Gourmet', sugerencias: 'Sugerencia', dulces: 'Dulce' };
+  // Fotos reales de cada pizza (Instagram de Tómbola, serie «30 pizzas»)
+  const PHOTO = { 1: 'margarita', 2: 'prosciutto', 4: 'hawaiana', 5: 'barbacoa', 6: 'carbonara', 7: 'cuatroquesos', 8: 'funghi-horno',
+    9: 'olivia', 10: 'popeye', 11: 'vegana', 12: 'picantona', 13: 'gambas', 14: 'alba-horno', 16: 'iberica', 17: 'burratina', 18: 'tombola',
+    19: 'brindis', 21: 'nutella', 23: 'tuna', 24: 'tomatina', 25: 'caperucita', 26: 'chicken', 27: 'porky', 28: 'stagione-recoger',
+    29: 'vegetal', 30: 'papamoscas', 32: 'revoltosa' };
   const VEG = new Set([1, 7, 9, 10, 11, 24, 29, 33, 21, 22, 20]);
 
   /* ---------- hora de Burgos y horario ---------- */
@@ -88,7 +93,8 @@
   /* ---------- carta ---------- */
   const grid = $('#menuGrid');
   grid.innerHTML = MENU.map(([cat, n, name, desc, price]) => `
-    <article class="dish tilt" data-cat="${cat}" data-n="${n}" id="pizza-${n}">
+    <article class="dish tilt has-photo" data-cat="${cat}" data-n="${n}" id="pizza-${n}">
+      ${PHOTO[n] ? `<div class="d-img"><img src="img/real/${PHOTO[n]}-card.jpg" alt="Pizza ${name} de Tómbola" loading="lazy" width="560" height="420"></div>` : `<div class="d-img d-ph" aria-hidden="true"><b>${name}</b><span>Pizza ${String(n).padStart(2, '0')} · 33 cm</span></div>`}
       <div class="d-top"><span class="d-num mono">${String(n).padStart(2, '0')}</span><span class="d-cat mono">${CAT[cat]}${VEG.has(n) ? ' · sin carne' : ''}</span></div>
       <h3>${name}</h3>
       <p>${desc}</p>
@@ -159,7 +165,8 @@
     const steps = reduce ? 1 : 22; let i = 0;
     (function tick() {
       const it = i < steps - 1 ? pool[Math.floor(Math.random() * pool.length)] : pick;
-      result.innerHTML = `<span class="ball mono">${String(it[1]).padStart(2, '0')}</span><div><span class="mono">${i < steps - 1 ? 'Girando la tómbola…' : 'Te ha tocado'}</span><b>${it[2]}</b>${i < steps - 1 ? '' : `<small>${it[3]} · ${it[4]} €</small>`}</div>${i < steps - 1 ? '' : `<button class="btn btn-sm" data-add="${it[1]}"><span>Añadir al pedido</span></button>`}`;
+      const fin = i >= steps - 1 && PHOTO[it[1]];
+      result.innerHTML = `${fin ? `<img class="t-photo" src="img/real/${PHOTO[it[1]]}-card.jpg" alt="Pizza ${it[2]}">` : ''}<span class="ball mono">${String(it[1]).padStart(2, '0')}</span><div><span class="mono">${i < steps - 1 ? 'Girando la tómbola…' : 'Te ha tocado'}</span><b>${it[2]}</b>${i < steps - 1 ? '' : `<small>${it[3]} · ${it[4]} €</small>`}</div>${i < steps - 1 ? '' : `<button class="btn btn-sm" data-add="${it[1]}"><span>Añadir al pedido</span></button>`}`;
       i++;
       if (i < steps) setTimeout(tick, 40 + i * i * 0.55);
       else {

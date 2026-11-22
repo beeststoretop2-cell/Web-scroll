@@ -716,7 +716,8 @@ const mouse = { x: 0, y: 0, sx: 0, sy: 0 };
 addEventListener('pointermove', (e) => { mouse.x = e.clientX / innerWidth - 0.5; mouse.y = e.clientY / innerHeight - 0.5; }, { passive: true });
 
 /* ---------------- fondo: fotos reales de Tómbola, virado a dos tonos de brasa, Ken Burns ---------------- */
-const BG_PHOTOS = ['img/horno.jpg', 'img/pizzeros.jpg', 'img/pizza-mesa.jpg', 'img/pala-pizza.jpg', 'img/mural.jpg', 'img/pizza-neon.jpg', 'img/neon.jpg'];
+// Fondos: fotos reales del local y del equipo (Instagram de Tómbola)
+const BG_PHOTOS = ['img/real/alba-horno.jpg', 'img/real/popeye.jpg', 'img/real/iberica.jpg', 'img/real/tombola.jpg', 'img/real/equipo-catedral.jpg', 'img/real/brindis.jpg', 'img/real/caperucita.jpg'];
 const texLoader = new THREE.TextureLoader();
 const texCache = {};
 const blank = new THREE.DataTexture(new Uint8Array([20, 8, 5, 255]), 1, 1); blank.needsUpdate = true;
@@ -744,16 +745,16 @@ const bgMat = new THREE.ShaderMaterial({
     vec3 grade(vec3 c, vec2 uv){
       float l = dot(c, vec3(0.299, 0.587, 0.114));
       vec3 duo = mix(vec3(0.05, 0.012, 0.008), vec3(0.95, 0.5, 0.26), smoothstep(0.04, 0.95, l));
-      vec3 o = mix(duo, c, 0.3) * 0.36;
-      o /= 1.0 + l * 0.8;
+      vec3 o = mix(duo, c, 0.62) * 0.62;   // más color real: se ve a la gente y el local
+      o /= 1.0 + l * 0.5;
       float v = smoothstep(1.15, 0.15, length((uv - 0.5) * vec2(1.25, 1.0)));
       return o * mix(0.22, 1.0, v);
     }
     void main(){
       float kA = 1.08 + 0.05 * sin(uTime * 0.05) + uMix * 0.1, kB = 1.14 - uMix * 0.05;
       vec2 d = uMouse * 0.012 + vec2(sin(uTime*0.03)*0.015, 0.0);
-      vec3 a = texture2D(uA, cover(vUv, uAspA, kA, d), 1.6).rgb;
-      vec3 b = texture2D(uB, cover(vUv, uAspB, kB, -d), 1.6).rgb;
+      vec3 a = texture2D(uA, cover(vUv, uAspA, kA, d), 0.4).rgb;
+      vec3 b = texture2D(uB, cover(vUv, uAspB, kB, -d), 0.4).rgb;
       vec3 c = mix(grade(a, vUv), grade(b, vUv), smoothstep(0.15, 0.85, uMix));
       c *= mix(1.0, 0.7, sin(uMix * 3.14159));
       gl_FragColor = vec4(c, 1.0);

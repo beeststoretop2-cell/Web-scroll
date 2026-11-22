@@ -411,3 +411,10 @@ body:not(.loaded) .hero .reveal{opacity:0}
   .rev-head,.rev-track,.rev-cta{padding-left:var(--gut)}
   .rev-cta .btn{width:100%}
 }
+.rev.text-only{width:min(300px,78vw);justify-content:flex-start}
+.rev.text-only figcaption{padding-top:24px}
+.rev small{font-size:11px;color:var(--mute)}
+.rev-sum{padding:0 var(--gutr) 8px calc(var(--gut) + clamp(0px,5vw,90px));font-family:var(--fm);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+@media (max-width:760px){.rev-sum{padding-left:var(--gut)}}
+.rev-track{align-items:flex-start}
+.rev.text-only cite{margin-top:14px}

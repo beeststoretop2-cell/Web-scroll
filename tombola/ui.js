@@ -43,9 +43,9 @@
   ];
   const CAT = { clasicas: 'Clásica', especiales: 'Especial', gourmet: 'Gourmet', sugerencias: 'Sugerencia', dulces: 'Dulce' };
   // Fotos reales de cada pizza (Instagram de Tómbola, serie «30 pizzas»)
-  const PHOTO = { 1: 'margarita', 2: 'prosciutto', 4: 'hawaiana', 5: 'barbacoa', 6: 'carbonara', 7: 'cuatroquesos', 8: 'funghi-horno',
+  const PHOTO = { 1: 'margarita', 2: 'prosciutto-glovo', 15: 'salmonete', 4: 'hawaiana', 5: 'barbacoa', 6: 'carbonara', 7: 'cuatroquesos', 8: 'funghi-horno',
     9: 'olivia', 10: 'popeye', 11: 'vegana', 12: 'picantona', 13: 'gambas', 14: 'alba-horno', 16: 'iberica', 17: 'burratina', 18: 'tombola',
-    19: 'brindis', 21: 'nutella', 23: 'tuna', 24: 'tomatina', 25: 'caperucita', 26: 'chicken', 27: 'porky', 28: 'stagione-recoger',
+    19: 'brindis', 21: 'nutella', 23: 'tuna', 24: 'tomatina', 25: 'caperucita', 26: 'chicken', 27: 'porky-maps', 28: 'stagione-recoger',
     29: 'vegetal', 30: 'papamoscas', 32: 'revoltosa' };
   const VEG = new Set([1, 7, 9, 10, 11, 24, 29, 33, 21, 22, 20]);
 

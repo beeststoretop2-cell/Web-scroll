@@ -524,17 +524,22 @@ const dough = { k: 1, target: 1 };
 /* ---------------- 5 · bebidas: foto real del brindis en Tómbola ---------------- */
 {
   const g = new THREE.Group(); g.position.copy(P[5]).add(new THREE.Vector3(-0.6, 0.4, 0)); scene.add(g);
-  const tex = photoTex('img/real/brindis-card.jpg'); const W = 5.6, H = W * 960 / 1100;
+  const tex = photoTex('img/real/canas.jpg'); const W = 3.1, H = W * 1590 / 1206;
   const card = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
   const frame = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.16, H + 0.16), new THREE.MeshBasicMaterial({ color: 0xf3e6cf, toneMapped: false }));
   frame.position.z = -0.02; card.add(frame); g.add(card);
   const glowB = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, H * 1.9), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(0xffa040).multiplyScalar(0.6), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
   glowB.position.z = -0.4; card.add(glowB);
+  const tex2 = photoTex('img/real/mesa-canas-card.jpg');
+  const card2 = new THREE.Mesh(new THREE.PlaneGeometry(3.6, 2.7), new THREE.MeshBasicMaterial({ map: tex2, toneMapped: false }));
+  const fr2 = new THREE.Mesh(new THREE.PlaneGeometry(3.72, 2.82), new THREE.MeshBasicMaterial({ color: 0xf3e6cf, toneMapped: false })); fr2.position.z = -0.02; card2.add(fr2);
+  card2.position.set(-2.6, -0.9, -1.2); g.add(card2);
   const bubbles = makePoints(80, new THREE.Vector3(6, 5, 2), new THREE.Vector3(0, 0, 0.8), { size: 1.4, rise: 0.5, color: 0xffe2a0, boost: 1.6, additive: true });
   g.add(bubbles);
   animated.push((t) => {
-    card.quaternion.copy(camera.quaternion); card.rotateZ(-0.03 + Math.sin(t * 0.5) * 0.02);
-    card.position.y = Math.sin(t * 0.7) * 0.14;
+    card.quaternion.copy(camera.quaternion); card.rotateZ(-0.05 + Math.sin(t * 0.5) * 0.02); card.position.x = 0.6;
+    card.position.y = 0.5 + Math.sin(t * 0.7) * 0.14;
+    card2.quaternion.copy(camera.quaternion); card2.rotateZ(0.05); card2.position.y = -0.9 + Math.sin(t * 0.6 + 1) * 0.12;
   });
 }
 
@@ -553,9 +558,9 @@ const dough = { k: 1, target: 1 };
     grp.add(front); grp.userData.front = front; return grp;
   };
   // neón real: la foto del letrero del local, enmarcada y con su resplandor
-  const sign = photoCard('img/real/neon-real.jpg', 6.4, 6.4 * 540 / 940, 0x2a0a06);
+  const sign = photoCard('img/real/neon2.jpg', 6.4, 6.4 * 335 / 668, 0x2a0a06);
   sign.position.set(2.9, 3.1, -3.2); g.add(sign);
-  const frame = new THREE.Mesh(new THREE.PlaneGeometry(6.62, 6.62 * 540 / 940), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff5a2e).multiplyScalar(1.6), toneMapped: false }));
+  const frame = new THREE.Mesh(new THREE.PlaneGeometry(6.62, 6.4 * 335 / 668 + 0.22), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff5a2e).multiplyScalar(1.6), toneMapped: false }));
   frame.position.z = -0.24; sign.add(frame);
   const signGlow = new THREE.Mesh(new THREE.PlaneGeometry(12, 7), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(0xff3a1a).multiplyScalar(0.9), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
   signGlow.position.z = -0.5; sign.add(signGlow);
@@ -613,7 +618,7 @@ addEventListener('pointermove', (e) => { mouse.x = e.clientX / innerWidth - 0.5;
 /* ---------------- fondo: fotos reales de Tómbola, virado a dos tonos de brasa, Ken Burns ---------------- */
 // Fondos: fotos reales del local y del equipo (Instagram de Tómbola)
 // Vídeos reales (Instagram de Tómbola) en las escenas clave; fotos reales en el resto
-const BG_PHOTOS = ['video/horno.mp4', 'video/masa.mp4', 'video/sabor.mp4', 'img/real/tombola.jpg', 'video/et.mp4', 'img/real/iberica.jpg', 'video/local.mp4'];
+const BG_PHOTOS = ['video/horno.mp4', 'video/masa.mp4', 'video/sabor.mp4', 'img/real/interior.jpg', 'video/et.mp4', 'img/real/mesa-canas.jpg', 'video/local.mp4'];
 const BG_WEBM = { 0: 'video/horno.webm', 1: 'video/masa.webm', 2: 'video/sabor.webm', 4: 'video/et.webm', 6: 'video/local.webm' };
 const texLoader = new THREE.TextureLoader();
 const texCache = {};

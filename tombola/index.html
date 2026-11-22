@@ -150,6 +150,27 @@
     </div>
   </div>
 
+
+  <!-- OPINIONES REALES DE GOOGLE (prueba social antes de la carta) -->
+  <section class="reviews" id="opiniones" aria-labelledby="revTitle">
+    <div class="rev-head">
+      <p class="kicker">Lo que dicen en Google</p>
+      <h2 class="mega" id="revTitle">No lo decimos <em class="serif">nosotros.</em></h2>
+    </div>
+    <div class="rev-track">
+      <figure class="rev glass tilt"><img src="img/real/mesa-canas-card.jpg" alt="Pizzas y cañas en una mesa de Tómbola, foto de Paula en Google" loading="lazy"><figcaption><span class="stars" aria-label="5 de 5 estrellas">★★★★★</span><blockquote>“Un lugar con encanto y muy acogedor para disfrutar de unas riquísimas pizzas.”</blockquote><cite>Paula · Google</cite></figcaption></figure>
+      <figure class="rev glass tilt"><img src="img/real/canas-card.jpg" alt="Dos cañas Mahou en Tómbola, foto de Katy Segovia en Google" loading="lazy"><figcaption><span class="stars" aria-label="5 de 5 estrellas">★★★★★</span><blockquote>“Muy bien lugar para saborear rica pizza. Comida: 5 | Servicio: 5 | Ambiente: 4”</blockquote><cite>Katy Segovia · Google</cite></figcaption></figure>
+      <figure class="rev glass tilt"><img src="img/real/porky-maps-card.jpg" alt="Pizza Porky, foto de pakito88 en Google" loading="lazy"><figcaption><span class="stars" aria-label="5 de 5 estrellas">★★★★★</span><blockquote>“Si eres amante de las pizzas caseras, estás obligado a entrar y probar…”</blockquote><cite>pakito88 mielgo garcia · Google</cite></figcaption></figure>
+      <figure class="rev glass tilt"><img src="img/real/mural-coche-card.jpg" alt="Mural de Tómbola con banco hecho de un coche, foto de Vontade de Verao en Google" loading="lazy"><figcaption><span class="stars" aria-label="5 de 5 estrellas">★★★★★</span><blockquote>“Pizzería donde comer rápido y bien. Comida: 4 | Servicio: 5 | Ambiente: 5…”</blockquote><cite>Vontade de Verao · Google</cite></figcaption></figure>
+      <figure class="rev glass tilt"><img src="img/real/mural-pano-card.jpg" alt="Mural del astronauta y E.T. en Tómbola, foto de Oscar Kubozzy en Google" loading="lazy"><figcaption><span class="stars" aria-label="5 de 5 estrellas">★★★★★</span><blockquote>“No me esperaba yo, que en un lateral pegado a esta obra maestra que es…”</blockquote><cite>Oscar Kubozzy · Google</cite></figcaption></figure>
+      <figure class="rev glass tilt"><img src="img/real/interior-card.jpg" alt="Interior de Tómbola con clientes cenando, foto de Quizás Nueva York en Google" loading="lazy"><figcaption><span class="stars" aria-label="4 de 5 estrellas">★★★★<i>★</i></span><blockquote>“Pizzería con un público muy familiar.”</blockquote><cite>Quizás Nueva York · Google</cite></figcaption></figure>
+    </div>
+    <div class="rev-cta">
+      <a class="btn magnetic" href="#carta"><span>Elegir mi pizza</span></a>
+      <a class="btn btn-ghost" href="https://maps.app.goo.gl/P6vCZqYURkC3wHGq9" target="_blank" rel="noopener"><span>Ver todas las reseñas en Google</span></a>
+    </div>
+  </section>
+
   <!-- 3 · CARTA -->
   <section class="scene scene-tall" id="carta" data-scene="3" data-label="La carta">
     <div class="carta-head glass">
@@ -192,6 +213,8 @@
         <figure class="hs-card tall"><video muted loop playsinline autoplay preload="metadata" data-v="et" aria-label="El equipo de Tómbola poniendo un gorro de colores a E.T."><source src="video/et.mp4" type="video/mp4"><source src="video/et.webm" type="video/webm"></video></figure>
         <div class="hs-quote glass et"><span class="mono">Nuestro anfitrión</span><p class="serif">E.T. siempre está en Tómbola. Junto al horno, en la mesa o en tus fotos.</p></div>
         <figure class="hs-card tall"><img src="img/real/stagione-recoger.jpg" alt="Pizza 4 Stagione junto a las cajas de Tómbola para recoger" loading="lazy"></figure>
+        <figure class="hs-card"><img src="img/real/mural-pano.jpg" alt="Mural del astronauta, E.T. y el nombre Tómbola en el local" loading="lazy"></figure>
+        <figure class="hs-card tall"><img src="img/real/mural-coche.jpg" alt="Banco hecho con la parte delantera de un coche bajo el mural de Tómbola" loading="lazy"></figure>
         <figure class="hs-card"><img src="img/real/tuna.jpg" alt="Pizza Tuna frente al mural del astronauta" loading="lazy"></figure>
         <figure class="hs-card tall"><img src="img/real/prosciutto.jpg" alt="Pizza Prosciutto con la caja de Tómbola" loading="lazy"></figure>
         <figure class="hs-card tall"><img src="img/real/papamoscas.jpg" alt="Pizza Papamoscas delante de la bicicleta roja del local" loading="lazy"></figure>
@@ -266,6 +289,11 @@
 </main>
 
 <!-- Pedido -->
+<nav class="action-bar" aria-label="Pedir">
+  <a href="tel:+34947094784"><b>Llamar</b><span>y recoger</span></a>
+  <a href="#carta"><b>Carta</b><span>33 pizzas</span></a>
+  <a href="https://glovoapp.com/es/es/burgos/" target="_blank" rel="noopener"><b>Glovo</b><span>a domicilio</span></a>
+</nav>
 <button class="order-pill" id="orderPill" hidden aria-controls="orderPanel" aria-expanded="false"><span>Tu pedido</span><b id="orderCount">0</b><em id="orderTotal">0 €</em></button>
 <div class="order-panel" id="orderPanel" role="dialog" aria-modal="true" aria-labelledby="orderTitle" aria-hidden="true">
   <div class="op-back" data-close></div>

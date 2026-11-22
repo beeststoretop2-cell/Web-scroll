@@ -569,56 +569,42 @@ const dough = { k: 1, target: 1 };
   void spin;
 }
 
-/* ---------------- 6 · neón "Viva la pizza" y caja para llevar ---------------- */
+/* ---------------- 6 · neón real "Viva la pizza" y la caja oficial de Tómbola (fotos reales) ---------------- */
 {
   const g = new THREE.Group(); g.position.copy(P[6]); scene.add(g);
   layoutFns.push((pt) => { g.position.x = P[6].x + (pt ? -2.5 : 0); });
-  const neonCanvas = document.createElement('canvas'); neonCanvas.width = 1024; neonCanvas.height = 420;
-  const neonTex = new THREE.CanvasTexture(neonCanvas); neonTex.colorSpace = THREE.SRGBColorSpace;
-  const drawNeon = () => {
-    const c = neonCanvas.getContext('2d'); c.clearRect(0, 0, 1024, 420);
-    c.lineJoin = 'round'; c.lineCap = 'round';
-    // marco de bombillas
-    for (let i = 0; i < 64; i++) {
-      const per = i / 64, side = Math.floor(per * 4), f = (per * 4) % 1;
-      const x = [40 + f * 944, 984, 984 - f * 944, 40][side], y = [40, 40 + f * 340, 380, 380 - f * 340][side];
-      c.fillStyle = '#ffb36a'; c.shadowColor = '#ff7a2a'; c.shadowBlur = 18; c.beginPath(); c.arc(x, y, 6, 0, TAU); c.fill();
+  // tarjeta flotante con relieve hecha a partir de una foto (igual que el horno)
+  const photoCard = (url, w, h, rim) => {
+    const tex = photoTex(url), grp = new THREE.Group();
+    for (let k = 5; k >= 1; k--) {
+      const m = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.3, color: new THREE.Color(rim).multiplyScalar(0.25 + 0.05 * (5 - k)), side: THREE.DoubleSide, toneMapped: false });
+      const l = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m); l.position.z = -k * 0.04; grp.add(l);
     }
-    c.font = 'italic 158px "Instrument Serif", Georgia, serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
-    c.shadowColor = '#ff3a1a'; c.shadowBlur = 40; c.strokeStyle = '#ff5a2e'; c.lineWidth = 14; c.strokeText('Viva la pizza', 512, 215);
-    c.shadowBlur = 14; c.strokeStyle = '#ffc2a0'; c.lineWidth = 4; c.strokeText('Viva la pizza', 512, 215);
-    neonTex.needsUpdate = true;
+    const front = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: tex, transparent: true, toneMapped: false }));
+    grp.add(front); grp.userData.front = front; return grp;
   };
-  drawNeon();
-  document.fonts?.load('italic 190px "Instrument Serif"').then(drawNeon).catch(() => {});
-  const neonMat = new THREE.MeshBasicMaterial({ map: neonTex, transparent: true, toneMapped: false, blending: THREE.AdditiveBlending, depthWrite: false, color: new THREE.Color(2.2, 2.2, 2.2) });
-  const sign = new THREE.Mesh(new THREE.PlaneGeometry(6.6, 2.7), neonMat); sign.position.set(2.9, 3.0, -3.2); g.add(sign);
-  const backing = new THREE.Mesh(new THREE.PlaneGeometry(6.8, 2.85), new THREE.MeshStandardMaterial({ color: 0x0d0806, roughness: 0.9 })); backing.position.set(2.9, 3.0, -3.25); g.add(backing);
-  const neonLight = new THREE.PointLight(0xff4a2a, 30, 12, 1.5); neonLight.position.set(0, 3, -1.8); g.add(neonLight);
-  // caja de pizza con logo que se abre
-  const kraft = new THREE.MeshStandardMaterial({ color: 0xc8a273, roughness: 0.9 });
-  const lidTop = new THREE.MeshStandardMaterial({ roughness: 0.85, map: canvasTex(512, 512, (c, w, h) => { c.fillStyle = '#c8a273'; c.fillRect(0, 0, w, h); for (let i = 0; i < 1500; i++) { c.fillStyle = `rgba(90,60,30,${rr(0.03, 0.12)})`; c.fillRect(rnd() * w, rnd() * h, 2, 2); } }) });
-  const logoImg = new Image(); logoImg.src = 'img/logo.png';
-  logoImg.onload = () => {
-    const c = lidTop.map.image.getContext('2d');
-    c.save(); c.globalCompositeOperation = 'multiply'; c.drawImage(logoImg, 56, 170, 400, 148); c.restore();
-    c.fillStyle = '#5a1018'; c.font = '600 22px "JetBrains Mono", monospace'; c.textAlign = 'center'; c.fillText('PIZZA ROMANA · 33 CM · BURGOS', 256, 370);
-    lidTop.map.needsUpdate = true;
-  };
-  const box = new THREE.Group(); box.position.set(2.0, -1.7, 0.6); box.rotation.y = -0.45; box.scale.setScalar(0.85); g.add(box);
-  const baseBox = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.34, 3.4), kraft); baseBox.position.y = 0.17; box.add(baseBox);
-  const boxPizza = makePizza('margarita', 1.5); boxPizza.position.y = 0.36; box.add(boxPizza);
-  const hinge = new THREE.Group(); hinge.position.set(0, 0.34, -1.7); box.add(hinge);
-  const lid = new THREE.Mesh(new THREE.BoxGeometry(3.42, 0.06, 3.42), [kraft, kraft, lidTop, kraft, kraft, kraft]); lid.position.set(0, 0.03, 1.71); hinge.add(lid);
-  const steam = makePoints(50, new THREE.Vector3(2, 3, 2), new THREE.Vector3(0, 2, 0), { size: 4, rise: 0.4, color: 0xfff2e2, boost: 0.8, alpha: 0.35 });
-  box.add(steam);
+  // neón real: la foto del letrero del local, enmarcada y con su resplandor
+  const sign = photoCard('img/real/neon-real.jpg', 6.4, 6.4 * 540 / 940, 0x2a0a06);
+  sign.position.set(2.9, 3.1, -3.2); g.add(sign);
+  const frame = new THREE.Mesh(new THREE.PlaneGeometry(6.62, 6.62 * 540 / 940), new THREE.MeshBasicMaterial({ color: new THREE.Color(0xff5a2e).multiplyScalar(1.6), toneMapped: false }));
+  frame.position.z = -0.24; sign.add(frame);
+  const signGlow = new THREE.Mesh(new THREE.PlaneGeometry(12, 7), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(0xff3a1a).multiplyScalar(0.9), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  signGlow.position.z = -0.5; sign.add(signGlow);
+  const neonMat = sign.userData.front.material; neonMat.color = new THREE.Color(1.25, 1.2, 1.2);
+  // caja oficial: pila de cajas reales de Tómbola (33 cm, www.pizzeriatombolaburgos.com)
+  const boxW = 2.6, box = photoCard('img/real/caja-real.png', boxW, boxW * 724 / 650, 0x8a6a40);
+  box.position.set(3.4, -1.3, 1.2); g.add(box);
+  const boxShadow = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 1.1), new THREE.MeshBasicMaterial({ map: glowSprite, color: 0x000000, transparent: true, opacity: 0.75, depthWrite: false }));
+  boxShadow.rotation.x = -Math.PI / 2; boxShadow.position.set(3.4, -3.0, 1.2); g.add(boxShadow);
+  const steam = makePoints(50, new THREE.Vector3(2.4, 3, 1.5), new THREE.Vector3(3.4, 1.0, 1.2), { size: 4, rise: 0.4, color: 0xfff2e2, boost: 0.8, alpha: 0.3 });
+  g.add(steam);
   [[5.6, 0.2, 0.5], [5.0, 2.4, -1.4], [-0.6, -0.6, 1.8]].forEach(([x, y, z], i) => { const o = RANDOM_ING[(i * 2) % RANDOM_ING.length](); g.add(o); floatAround(o, new THREE.Vector3(x, y, z), 0.25, 0.5); });
   animated.push((t) => {
-    const k = (Math.sin(t * 0.6) + 1) / 2;
-    hinge.rotation.x = -(0.15 + k * 1.15);
-    boxPizza.rotation.y = t * 0.2;
-    const flick = Math.random() > 0.985 ? 0.4 : 1;
-    neonMat.color.setScalar(2.2 * flick); neonLight.intensity = 30 * flick;
+    sign.rotation.y = -0.18 + Math.sin(t * 0.35) * 0.12; sign.position.y = 3.1 + Math.sin(t * 0.6) * 0.1;
+    box.rotation.y = 0.35 + Math.sin(t * 0.5) * 0.3; box.rotation.z = Math.sin(t * 0.7) * 0.04;
+    box.position.y = -1.3 + Math.sin(t * 0.9) * 0.18; boxShadow.scale.setScalar(1 - Math.sin(t * 0.9) * 0.06);
+    const flick = Math.random() > 0.985 ? 0.55 : 1;
+    neonMat.color.setScalar(1.22 * flick); signGlow.material.opacity = 0.8 * flick;
   });
 }
 

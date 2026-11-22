@@ -66,6 +66,11 @@ function canvasTex(w, h, draw, srgb = true) {
   t.anisotropy = 4;
   return t;
 }
+const glowSprite = canvasTex(128, 128, (g, w) => {
+  const r = g.createRadialGradient(w / 2, w / 2, 0, w / 2, w / 2, w / 2);
+  r.addColorStop(0, 'rgba(255,255,255,1)'); r.addColorStop(0.35, 'rgba(255,255,255,.45)'); r.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = r; g.fillRect(0, 0, w, w);
+}, false);
 const glow = (c, k = 3) => new THREE.MeshBasicMaterial({ color: new THREE.Color(c).multiplyScalar(k), toneMapped: false });
 function blob(g, x, y, r, wob = 0.18, pts = 14) {
   g.beginPath();
@@ -325,90 +330,43 @@ const K = [
 const camPts = P.map((p, i) => p.clone().add(new THREE.Vector3(...K[i].off)));
 const camCurve = new THREE.CatmullRomCurve3(camPts, false, 'centripetal', 0.5);
 
-/* ---------------- 0 · el horno ---------------- */
+/* ---------------- 0 · el horno: foto real del horno Marana de Tómbola, flotando en 3D ---------------- */
+const photoTex = (url) => { const t = new THREE.TextureLoader().load(url); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
 {
   const oven = new THREE.Group();
-  oven.position.copy(P[0]).add(new THREE.Vector3(2.4, -2.6, 0));
+  oven.position.copy(P[0]).add(new THREE.Vector3(1.9, -0.1, 0));
   scene.add(oven);
-  layoutFns.push((pt) => { oven.position.x = P[0].x + (pt ? 0 : 2.4); LOOK[0].x = pt ? 0 : 1.2; });
-  const base = new THREE.Mesh(new THREE.CylinderGeometry(3.25, 3.45, 1.6, 72), granite); base.position.y = 0.8; oven.add(base);
-  const slab = new THREE.Mesh(new THREE.CylinderGeometry(3.62, 3.62, 0.2, 72), granite); slab.position.y = 1.7; oven.add(slab);
-  const DOME_Y = 1.8, R = 3.1;
-  const mouth = `
-    vec3 lp = vLocal;
-    float ax = lp.x / 1.32;
-    if (lp.z > 0.0 && abs(ax) < 1.0 && lp.y < 1.55 * sqrt(1.0 - ax*ax)) discard;`;
-  const withMouth = (mat) => {
-    mat.onBeforeCompile = (sh) => {
-      sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vLocal;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvLocal = position;');
-      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vLocal;').replace('void main() {', 'void main() {' + mouth);
-    };
-    return mat;
-  };
-  const domeMat = withMouth(new THREE.MeshPhysicalMaterial({ color: 0xd8d0d0, map: ovenRedTex, roughness: 0.38, clearcoat: 0.8, clearcoatRoughness: 0.2, envMapIntensity: 0.6 }));
-  const dome = new THREE.Mesh(new THREE.SphereGeometry(R, 96, 48, 0, TAU, 0, Math.PI / 2), domeMat);
-  dome.position.y = DOME_Y; oven.add(dome);
-  const inner = new THREE.Mesh(new THREE.SphereGeometry(R - 0.12, 64, 32, 0, TAU, 0, Math.PI / 2),
-    withMouth(new THREE.MeshStandardMaterial({ color: 0x3a1a0e, roughness: 1, side: THREE.BackSide, emissive: 0x2a0a02, emissiveIntensity: 0.35 })));
-  inner.position.y = DOME_Y; oven.add(inner);
-  const sill = new THREE.Mesh(new THREE.TorusGeometry(R + 0.01, 0.07, 12, 120).rotateX(Math.PI / 2), steel); sill.position.y = DOME_Y + 0.03; oven.add(sill);
-  // arco de la boca
-  const arch = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.09, 12, 64, Math.PI), steel);
-  arch.scale.set(1.36, 1.6, 1); arch.position.set(0, DOME_Y, 2.62); oven.add(arch);
-  const archGlow = new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.025, 8, 64, Math.PI), glow(EMBER, 4));
-  archGlow.scale.set(1.28, 1.5, 1); archGlow.position.set(0, DOME_Y, 2.66); oven.add(archGlow);
-  // placa
-  const plate = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.38), new THREE.MeshStandardMaterial({
-    metalness: 0.9, roughness: 0.3,
-    map: canvasTex(512, 128, (g, w, h) => {
-      g.fillStyle = '#9aa0a6'; g.fillRect(0, 0, w, h); g.strokeStyle = '#5c6166'; g.lineWidth = 8; g.strokeRect(4, 4, w - 8, h - 8);
-      g.fillStyle = '#2a2d30'; g.font = '800 70px Archivo, Arial Black, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('TÓMBOLA', w / 2, h / 2 + 4);
-    }),
-  }));
-  plate.position.set(0, 1.2, 3.33); plate.rotation.x = -0.05; oven.add(plate);
-  // suelo giratorio con pizzas
-  const floor = new THREE.Group(); floor.position.y = DOME_Y + 0.02; oven.add(floor);
-  floor.add(new THREE.Mesh(new THREE.CylinderGeometry(2.75, 2.75, 0.06, 64), new THREE.MeshStandardMaterial({ color: 0x6b4a36, roughness: 0.95 })));
-  const kinds = ['margarita', 'pepperoni', 'vegetal', 'tombola'];
-  const inOven = kinds.map((k, i) => {
-    const pz = makePizza(k, 0.78); const a = (i / kinds.length) * TAU;
-    pz.position.set(Math.cos(a) * 1.55, 0.06, Math.sin(a) * 1.55); floor.add(pz); return pz;
-  });
-  // fuego y leña al fondo
-  const logs = new THREE.Group(); logs.position.set(0, DOME_Y + 0.1, -1.7); oven.add(logs);
-  const logMat = new THREE.MeshStandardMaterial({ color: 0x2a1408, roughness: 0.9, emissive: 0xff4a10, emissiveIntensity: 0.35 });
-  [[-0.5, 0.3], [0.45, -0.35], [0, 0.05]].forEach(([x, r], i) => {
-    const l = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 1.7, 10), logMat);
-    l.rotation.z = Math.PI / 2; l.rotation.y = r; l.position.set(x * 0.6, 0.12 + i * 0.16, 0); logs.add(l);
-  });
-  const flames = [];
-  [[-0.7, 1.6, 2.2], [0.1, 2.0, 2.6], [0.8, 1.5, 2.0], [-0.25, 1.2, 1.7], [0.45, 1.1, 1.6]].forEach(([x, w, h], i) => {
-    const f = makeFlame(w, h, i * 3.7); f.position.set(x, DOME_Y + 0.1, -1.55 + i * 0.04); oven.add(f); flames.push(f);
-  });
-  const fireLight = new THREE.PointLight(0xff7a2a, 16, 7, 1.8); fireLight.position.set(0, DOME_Y + 1, -0.8); oven.add(fireLight);
-  const mouthLight = new THREE.PointLight(0xff8a40, 5, 8, 2); mouthLight.position.set(0, DOME_Y + 0.8, 3.6); oven.add(mouthLight);
-  // chispas que salen de la boca
-  const sparks = makePoints(isMobile ? 70 : 140, new THREE.Vector3(2.4, 6, 1.6), new THREE.Vector3(0, DOME_Y + 3, 2.4), { size: 2.6, rise: 0.9, color: 0xff8a3a, boost: 2.6, additive: true });
+  layoutFns.push((pt) => { oven.position.x = P[0].x + (pt ? 0 : 1.9); LOOK[0].x = pt ? 0 : 1.2; });
+  const tex = photoTex('img/real/horno-real.png');
+  const W = 5.9, H = W * 840 / 900;
+  const card = new THREE.Group(); oven.add(card);
+  // relieve: varias capas oscurecidas detrás de la foto, como un objeto recortado con grosor
+  for (let k = 6; k >= 1; k--) {
+    const m = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.35, color: new THREE.Color(0.16 + 0.03 * (6 - k), 0.06, 0.04), side: THREE.DoubleSide, toneMapped: false });
+    const l = new THREE.Mesh(new THREE.PlaneGeometry(W, H), m); l.position.z = -k * 0.045; card.add(l);
+  }
+  const front = new THREE.Mesh(new THREE.PlaneGeometry(W, H), new THREE.MeshBasicMaterial({ map: tex, transparent: true, side: THREE.FrontSide, color: new THREE.Color(1.08, 1.04, 1.02), toneMapped: false }));
+  card.add(front);
+  // halo de brasa detrás y luz que parpadea en la mirilla del fuego
+  const halo = new THREE.Mesh(new THREE.PlaneGeometry(W * 1.9, H * 1.7), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(EMBER).multiplyScalar(0.9), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  halo.position.z = -0.6; card.add(halo);
+  const fire = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.6), new THREE.MeshBasicMaterial({ map: glowSprite, color: new THREE.Color(0xff8a30).multiplyScalar(2.2), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, toneMapped: false }));
+  fire.position.set(-W / 2 + W * 0.145, H / 2 - H * 0.58, 0.05); card.add(fire);
+  const shadow = new THREE.Mesh(new THREE.PlaneGeometry(W * 0.9, 1.4), new THREE.MeshBasicMaterial({ map: glowSprite, color: 0x000000, transparent: true, opacity: 0.8, depthWrite: false }));
+  shadow.rotation.x = -Math.PI / 2; shadow.position.y = -H / 2 - 0.9; oven.add(shadow);
+  const sparks = makePoints(isMobile ? 70 : 140, new THREE.Vector3(5, 6, 2), new THREE.Vector3(0, 2.2, 0.6), { size: 2.6, rise: 0.9, color: 0xff8a3a, boost: 2.6, additive: true });
   oven.add(sparks);
-  // pala con pizza que entra y sale del horno
-  const peel = new THREE.Group();
-  const blade = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 0.95, 0.04, 48), steel); peel.add(blade);
-  const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 4.2, 12), new THREE.MeshPhysicalMaterial({ color: 0x1d5fae, roughness: 0.35, clearcoat: 1 }));
-  handle.geometry = new THREE.CylinderGeometry(0.05, 0.05, 2.4, 12); handle.rotation.x = Math.PI / 2; handle.position.z = 2.1; peel.add(handle);
-  const peelPizza = makePizza('prosciutto', 0.85); peelPizza.position.y = 0.05; peel.add(peelPizza);
-  peel.position.set(0, DOME_Y + 0.3, 4.6); oven.add(peel);
-  // ingredientes flotando alrededor
-  [[4.2, 4.6, 1.2], [5.4, 3.0, -0.8], [3.9, 1.2, 2.8], [-1.5, 6.4, -2.5], [4.8, 6.4, -1], [6.2, 1.6, 0.6]].forEach(([x, y, z], i) => {
+  [[4.6, 3.0, 1.2], [5.4, 0.6, -0.8], [4.4, -1.6, 1.8], [-1.5, 4.6, -2.5], [5.6, 4.6, -1]].forEach(([x, y, z], i) => {
     const o = RANDOM_ING[i % RANDOM_ING.length](); oven.add(o); floatAround(o, new THREE.Vector3(x, y, z), 0.3, 0.6);
   });
   animated.push((t) => {
-    floor.rotation.y = t * 0.25;
-    inOven.forEach((p, i) => { p.rotation.y = -t * 0.6 * (i % 2 ? 1 : -1); });
-    fireLight.intensity = 14 + Math.sin(t * 13) * 2.5 + Math.sin(t * 7.3) * 2;
-    mouthLight.intensity = 5 + Math.sin(t * 9.1) * 1.2;
-    const k = (Math.sin(t * 0.55) + 1) / 2;
-    peel.position.z = 2.4 + (1 - k) * 1.8; peel.position.y = DOME_Y + 0.3 + Math.sin(t * 0.55) * 0.12;
-    peelPizza.rotation.y = t * 0.4;
+    card.rotation.y = -0.28 + Math.sin(t * 0.45) * 0.26;
+    card.rotation.x = Math.sin(t * 0.33) * 0.04;
+    card.position.y = Math.sin(t * 0.8) * 0.18;
+    shadow.scale.setScalar(1 - Math.sin(t * 0.8) * 0.05);
+    const f = 0.85 + Math.sin(t * 13) * 0.08 + Math.sin(t * 7.3) * 0.07;
+    fire.scale.setScalar(f); fire.material.opacity = f;
+    halo.material.opacity = 0.55 + Math.sin(t * 2.1) * 0.08;
   });
 }
 
@@ -417,25 +375,18 @@ const dough = { k: 1, target: 1 };
 {
   const g = new THREE.Group(); g.position.copy(P[1]).add(new THREE.Vector3(-1.6, -1.4, 0)); scene.add(g);
   layoutFns.push((pt) => { g.position.x = P[1].x + (pt ? 0 : -1.6); });
-  const boardTex = canvasTex(512, 512, (c, w, h) => {
-    c.drawImage(woodTex.image, 0, 0);
-    for (let i = 0; i < 2600; i++) { c.fillStyle = `rgba(250,244,232,${rr(0.03, 0.16)})`; blob(c, rnd() * w, rnd() * h, rr(1, 6)); }
-  });
-  const board = new THREE.Mesh(new THREE.BoxGeometry(7, 0.3, 4.6), [wood, wood, new THREE.MeshStandardMaterial({ map: boardTex, roughness: 0.85 }), wood, wood, wood]);
-  g.add(board);
-  const doughMat = new THREE.MeshPhysicalMaterial({ color: 0xd9bf94, roughness: 0.72, sheen: 0.5, sheenRoughness: 0.6, sheenColor: new THREE.Color(0xffeccc), envMapIntensity: 0.5 });
+  // bolas de masa reales (fotograma del vídeo de Tómbola) que crecen con el reloj de fermentación
+  const ballTex = photoTex('img/real/bola-masa.png');
   const balls = [];
-  const bubbleGeo = new THREE.SphereGeometry(1, 10, 8);
-  const bubbles = new THREE.InstancedMesh(bubbleGeo, doughMat, 6 * 12);
-  g.add(bubbles);
-  const bubbleDirs = [];
-  for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) {
-    const b = new THREE.Mesh(new THREE.SphereGeometry(0.62, 48, 32), doughMat);
-    b.position.set((c - 1) * 2.1, 0.15, (r - 0.5) * 2.05); g.add(b); balls.push(b);
-    for (let j = 0; j < 12; j++) { const a = rnd() * TAU, el = rr(0.25, 1.2); bubbleDirs.push([new THREE.Vector3(Math.cos(a) * Math.cos(el), Math.sin(el), Math.sin(a) * Math.cos(el)), rr(0.05, 0.1)]); }
-  }
+  const spots = [[-2.8, 0.1, 0.9, 0.85], [0, -0.1, 1.5, 1.0], [2.8, 0.2, 0.7, 0.8], [-1.5, 1.3, -1.3, 0.7], [1.5, 1.4, -1.1, 0.72], [3.9, 1.7, -2.0, 0.6]];
+  spots.forEach(([x, y, z, s], i) => {
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: ballTex, transparent: true, toneMapped: false, color: new THREE.Color(1.05, 1.0, 0.95) }));
+    sp.position.set(x, y, z); sp.userData = { s, y, ph: i * 1.3 }; g.add(sp); balls.push(sp);
+    const sh = new THREE.Mesh(new THREE.PlaneGeometry(1.8, 0.8), new THREE.MeshBasicMaterial({ map: glowSprite, color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false }));
+    sh.rotation.x = -Math.PI / 2; sh.position.set(x, y - 0.9, z); g.add(sh); sp.userData.sh = sh;
+  });
   // indicador circular de horas
-  const ringG = new THREE.Group(); ringG.position.set(0, 2.6, -2.2); ringG.scale.setScalar(0.8); g.add(ringG);
+  const ringG = new THREE.Group(); ringG.position.set(0, 3.7, -2.6); ringG.scale.setScalar(0.8); g.add(ringG);
   ringG.add(new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.03, 8, 160), new THREE.MeshBasicMaterial({ color: 0x4a2a1a, transparent: true, opacity: 0.6 })));
   const arcMat = new THREE.ShaderMaterial({
     transparent: true, toneMapped: false, uniforms: { uK: { value: 1 } },
@@ -460,31 +411,20 @@ const dough = { k: 1, target: 1 };
     c.font = 'italic 90px "Instrument Serif", Georgia, serif'; c.fillStyle = '#ff9a5a'; c.fillText('h', 256 - (w + 40) / 2 + w + 6, 140);
     hourTex.needsUpdate = true;
   };
-  // rodillo
-  const pin = new THREE.Group();
-  pin.add(new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 3.2, 28), wood));
-  [-1, 1].forEach((s) => { const h = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.8, 12), wood); h.position.y = s * 2; pin.add(h); });
-  pin.rotation.set(0.2, 0.4, Math.PI / 2 - 0.25); pin.position.set(2.8, 0.55, 2.7); g.add(pin);
   const flour = makePoints(isMobile ? 120 : 240, new THREE.Vector3(9, 5, 6), new THREE.Vector3(0, 2.4, 0), { size: 2.2, rise: 0.12, color: 0xfff4e4, boost: 1.4, alpha: 0.8 });
   g.add(flour);
-  const m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), v = new THREE.Vector3(), sc = new THREE.Vector3();
   animated.push((t) => {
     if (typeof window.__doughHour === 'number') dough.target = window.__doughHour / 48;
     dough.k += (dough.target - dough.k) * 0.08;
     const k = dough.k;
     arcMat.uniforms.uK.value = Math.max(0.002, k);
     const h = Math.round(k * 48); if (h !== lastH) { lastH = h; drawHour(h); }
-    balls.forEach((b, i) => {
-      const s = 0.68 + k * 0.42 + Math.sin(t * 1.2 + i) * 0.012 * k;
-      b.scale.set(s * (1 + k * 0.12), s * (0.82 - k * 0.12), s * (1 + k * 0.12));
-      for (let j = 0; j < 12; j++) {
-        const [d, r] = bubbleDirs[i * 12 + j];
-        v.set(d.x * 0.62 * b.scale.x, d.y * 0.62 * b.scale.y, d.z * 0.62 * b.scale.z).add(b.position);
-        const bs = r * Math.max(0, (k - 0.2) / 0.8) * (0.8 + 0.2 * Math.sin(t * 2 + j));
-        m4.compose(v, q, sc.setScalar(Math.max(0.0001, bs))); bubbles.setMatrixAt(i * 12 + j, m4);
-      }
+    balls.forEach((b) => {
+      const u = b.userData, sc = (0.65 + k * 0.6) * u.s * (1 + Math.sin(t * 1.1 + u.ph) * 0.015);
+      b.scale.set(sc * 1.95, sc * 1.6 * (0.92 + k * 0.08), 1);
+      b.position.y = u.y + Math.sin(t * 0.7 + u.ph) * 0.12 + k * 0.25;
+      u.sh.scale.setScalar(0.7 + k * 0.6);
     });
-    bubbles.instanceMatrix.needsUpdate = true;
     ringG.lookAt(camera.position);
   });
 }

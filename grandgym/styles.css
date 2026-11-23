@@ -35,7 +35,7 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;overflow-x:clip}
-body{background:var(--void);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:hidden;overflow-x:clip;-webkit-font-smoothing:antialiased}
+body{background:var(--void);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -141,7 +141,7 @@ main{position:relative;z-index:2}
 .body.max{margin:0 0 30px}
 .fine{font-size:12px;color:var(--mute);margin-top:18px;max-width:80ch}
 
-.hero{max-width:820px}
+.hero{max-width:920px}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
 .cta-row.center{justify-content:center}
 .kpis{display:grid;grid-template-columns:repeat(4,auto);gap:10px 34px;margin-top:46px;justify-content:start}
@@ -149,6 +149,7 @@ main{position:relative;z-index:2}
 .kpis dt{font-family:var(--fm);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
 .kpis dd{font-family:var(--fd);font-weight:700;font-size:clamp(24px,2.4vw,34px);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .kpis small{color:var(--orange);font-size:.7em;margin-left:2px}
+.kpis small.unit{color:var(--ice);font-size:.55em;margin-left:5px;letter-spacing:0}
 .scroll-cue{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--fm);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
 .scroll-cue span{width:1px;height:46px;background:linear-gradient(var(--flame-b),transparent);animation:cue 1.8s infinite}
 @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
@@ -391,4 +392,47 @@ main{position:relative;z-index:2}
   html{scroll-behavior:auto}
   .reveal{opacity:1;transform:none;filter:none}
   .mega .line>span{transform:none}
+}
+
+/* ═══ live-3d-web: barra 3D en vivo ═══ */
+.leaders,.callouts{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0}
+.leaders{width:100%;height:100%}
+.leaders polyline{fill:none;stroke:rgba(193,231,254,.5);stroke-width:1}
+.leaders circle{fill:#4aa6e0}
+.callout{position:absolute;left:0;top:0;will-change:transform;display:flex;flex-direction:column;gap:3px;font-family:var(--fm);font-size:11px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap}
+.callout b{color:#fff;font-weight:600}
+.callout span{color:rgba(193,231,254,.62);letter-spacing:.05em;text-transform:none;font-size:11.5px}
+.callout[data-side="r"]{text-align:right;align-items:flex-end}
+.holdbar{position:fixed;z-index:30;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;padding:7px 10px 7px 7px;border-radius:999px;background:rgba(0,18,46,.78);border:1px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .8s .4s}
+.loaded .holdbar{opacity:1}
+.hold{--hold:0;position:relative;flex:0 0 56px;width:56px;height:56px;border:0;padding:0;border-radius:50%;background:transparent;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;appearance:none}
+.hold-ring{position:absolute;inset:0;transform:rotate(-90deg)}
+.hold-ring circle{fill:none;stroke-width:3}
+.hold-ring .track{stroke:rgba(193,231,254,.2)}
+.hold-ring .progress{stroke:#85d0f0;stroke-dasharray:1;stroke-dashoffset:1;stroke-linecap:round}
+.hold .core{position:absolute;inset:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#a6def6,#1a7fd0 55%,#003d7a);box-shadow:0 0 calc(10px + var(--hold)*36px) rgba(74,166,224,calc(.35 + var(--hold)*.5));transform:scale(calc(1 - var(--hold)*.12))}
+.holdtext{display:flex;flex-direction:column;gap:1px;white-space:nowrap;font-family:var(--fm);text-transform:uppercase;padding-right:4px}
+.holdtext b{font-size:11.5px;letter-spacing:.16em;color:#fff;font-weight:600}
+.holdtext span{font-size:10px;letter-spacing:.14em;color:rgba(193,231,254,.6)}
+.holdbar .chip{font-family:var(--fm);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:rgba(193,231,254,.65);cursor:pointer}
+.holdbar .chip.on{color:#fff;border-color:rgba(74,166,224,.75)}
+.lift-result{position:fixed;z-index:31;left:50%;bottom:98px;transform:translateX(-50%);display:flex;align-items:baseline;gap:12px;padding:10px 18px;border-radius:14px;background:rgba(0,18,46,.85);border:1px solid rgba(74,166,224,.6);backdrop-filter:blur(8px);white-space:nowrap;opacity:0;pointer-events:none}
+.lift-result b{font-family:var(--fd);font-weight:900;font-size:26px;letter-spacing:-.02em;color:#85d0f0}
+.lift-result span{font-family:var(--fm);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.8)}
+.lift-result.pop{animation:liftpop 2.6s cubic-bezier(.2,1.2,.4,1) forwards}
+@keyframes liftpop{0%{opacity:0;transform:translateX(-50%) translateY(14px) scale(.92)}12%{opacity:1;transform:translateX(-50%)}80%{opacity:1}100%{opacity:0}}
+.fps{position:fixed;z-index:60;left:10px;bottom:8px;font:11px monospace;color:rgba(193,231,254,.5);pointer-events:none}
+@media (max-width:720px){
+  .holdbar{bottom:14px;gap:8px;padding-right:8px}
+  .holdtext span{display:none}
+  .holdbar .chip{padding:8px 9px;font-size:9.5px;letter-spacing:.1em}
+  .callout{font-size:9px;letter-spacing:.08em}
+  .callout span{display:none}
+  .lift-result{bottom:86px}
+}
+/* en escritorio la barra de control va a la esquina para no tapar las cifras del inicio */
+@media (min-width:721px){
+  .holdbar{left:auto;right:56px;transform:none}
+  .lift-result{left:auto;right:56px;transform:none}
+  @keyframes liftpop{0%{opacity:0;transform:translateY(14px) scale(.92)}12%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 }

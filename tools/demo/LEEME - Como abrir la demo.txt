@@ -1,0 +1,41 @@
+GRANDGYM · DEMO DE LA NUEVA WEB
+================================
+
+HAY DOS ARCHIVOS (ábrelos en un ordenador Windows o Mac):
+
+  Grandgym-ORDENADOR.html  ->  la web tal como se ve en un ordenador.
+  Grandgym-MOVIL.html      ->  la misma web dentro de un iPhone dibujado en pantalla.
+                               Arriba hay un botón para cambiar a iPad.
+
+IMPORTANTE: deja los dos archivos juntos en la misma carpeta
+(la versión móvil usa el archivo de ordenador por dentro).
+
+CÓMO ABRIRLA
+1. Descomprime este ZIP (doble clic en él).
+2. Doble clic en el archivo que quieras ver.
+3. Se abre en el navegador. Recomendado: Google Chrome, Microsoft Edge o Safari.
+4. Haz scroll despacio con la rueda del ratón o el trackpad.
+   En la versión móvil, haz scroll con el ratón encima del teléfono.
+
+QUÉ PROBAR
+- La barra olímpica 3D: está hecha entera en código (no es un vídeo).
+  Mueve el ratón y verás cómo cambian los reflejos del metal.
+- "Mantén para levantar" (abajo a la derecha): mantén pulsado el botón
+  redondo. La barra sube con sus 130 kg; al soltar, cae sobre los discos
+  y rebota, con sonido.
+- "Plano": cambia la barra por su dibujo técnico, solo con las líneas.
+- "Sonido": activa o silencia los golpes y el metal.
+- En la sección de la piscina la barra aparece desmontada, pieza a pieza,
+  con el nombre y la medida de cada parte.
+- El horario: abre en el día de hoy y marca la clase de AHORA y la PRÓXIMA.
+- Las tarifas: cambia entre Anual / 3 meses / 1 mes.
+- "Prueba 1 día gratis": abre WhatsApp con la solicitud ya escrita.
+- El carrusel de clases en Actividades y la galería de fotos.
+- En móvil: el menú del botón ☰ arriba a la derecha.
+
+NOTAS
+- No necesita instalar nada. Los botones de Apúntate, WhatsApp y redes
+  necesitan internet porque llevan a sitios reales.
+- En iPad o iPhone, los archivos HTML abiertos desde la app Archivos no
+  ejecutan la parte 3D: para enseñarla en el móvil usa los vídeos.
+- Los vídeos no llevan sonido; la web sí (al pulsar "Mantén para levantar").

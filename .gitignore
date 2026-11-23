@@ -1,0 +1,6 @@
+
+# demo generada por tools/grandgym-demo.py (va dentro de Grandgym-demo.zip)
+entrega/_demo/
+
+# restos locales del prototipo de la tómbola (fuera del repo a petición del usuario)
+tombola/

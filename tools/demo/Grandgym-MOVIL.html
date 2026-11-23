@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grandgym · versión móvil (demo)</title>
+<style>
+:root{color-scheme:dark;--bg:#00122e;--ink:#fff;--mute:#a3bcd9;--sky:#85d0f0;--blue:#005da8}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:radial-gradient(ellipse at 50% 30%,#06306a 0%,var(--bg) 60%);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+header{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px max(18px,env(safe-area-inset-left,0px));flex-wrap:wrap}
+h1{font-size:15px;letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+h1 span{color:var(--sky)}
+.seg{display:inline-flex;padding:4px;border-radius:999px;border:1px solid rgba(133,208,240,.25);background:rgba(0,40,90,.5)}
+.seg button{border:0;background:none;color:var(--mute);font:600 13px system-ui;padding:8px 16px;border-radius:999px;cursor:pointer}
+.seg button.on{background:linear-gradient(100deg,#005da8,#4aa6e0);color:#fff}
+a.pc{color:var(--sky);font-size:13px;text-decoration:none;border-bottom:1px solid var(--sky)}
+.stage{flex:1;width:100%;display:grid;place-items:center;min-height:0}
+.holder{position:relative}
+.device{position:absolute;left:0;top:0;border-radius:56px;padding:14px;background:linear-gradient(145deg,#2a3340,#0b0f15);box-shadow:0 0 0 2px #3b4655,0 40px 120px -20px rgba(0,0,0,.8),0 0 120px -30px rgba(74,166,224,.5);transform-origin:0 0}
+.device.tablet{border-radius:38px;padding:22px}
+.device iframe{display:block;border:0;border-radius:42px;background:#00122e}
+.device.tablet iframe{border-radius:18px}
+.notch{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:96px;height:26px;border-radius:20px;background:#05070a;z-index:2;pointer-events:none}
+.device.tablet .notch{display:none}
+.hint{color:var(--mute);font-size:13px;padding:10px 16px 16px;text-align:center}
+</style></head>
+<body>
+<header>
+  <h1>Grandgym · <span>versión móvil</span></h1>
+  <div class="seg" role="tablist" aria-label="Dispositivo">
+    <button class="on" data-w="390" data-h="844" data-k="phone">iPhone</button>
+    <button data-w="820" data-h="1180" data-k="tablet">iPad</button>
+  </div>
+  <a class="pc" href="Grandgym-ORDENADOR.html">Ver versión ordenador →</a>
+</header>
+<div class="stage" id="stage">
+  <div class="holder" id="holder"><div class="device" id="device"><div class="notch"></div><iframe id="screen" src="Grandgym-ORDENADOR.html" title="Web de Grandgym en móvil" width="390" height="844"></iframe></div></div>
+</div>
+<p class="hint">Haz scroll dentro del móvil con la rueda del ratón o el trackpad, y pulsa los botones como si fuera un teléfono.</p>
+<script>
+const holder=document.getElementById('holder'), dev=document.getElementById('device'), fr=document.getElementById('screen'), stage=document.getElementById('stage');
+function fit(){
+  const w=+fr.width+(dev.classList.contains('tablet')?44:28), h=+fr.height+(dev.classList.contains('tablet')?44:28);
+  const s=Math.min(1,(stage.clientHeight-10)/h,(stage.clientWidth-24)/w);
+  dev.style.transform='scale('+s+')'; holder.style.width=(w*s)+'px'; holder.style.height=(h*s)+'px';
+}
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.seg button').forEach(x=>x.classList.toggle('on',x===b));
+  fr.width=b.dataset.w; fr.height=b.dataset.h; dev.classList.toggle('tablet',b.dataset.k==='tablet');
+  fr.src=fr.src; fit();
+}));
+addEventListener('resize',fit); fit();
+</script>
+</body></html>

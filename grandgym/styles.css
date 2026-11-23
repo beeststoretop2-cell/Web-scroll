@@ -141,7 +141,7 @@ main{position:relative;z-index:2}
 .body.max{margin:0 0 30px}
 .fine{font-size:12px;color:var(--mute);margin-top:18px;max-width:80ch}
 
-.hero{max-width:820px}
+.hero{max-width:920px}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
 .cta-row.center{justify-content:center}
 .kpis{display:grid;grid-template-columns:repeat(4,auto);gap:10px 34px;margin-top:46px;justify-content:start}
@@ -428,4 +428,10 @@ main{position:relative;z-index:2}
   .callout{font-size:9px;letter-spacing:.08em}
   .callout span{display:none}
   .lift-result{bottom:86px}
+}
+/* en escritorio la barra de control va a la esquina para no tapar las cifras del inicio */
+@media (min-width:721px){
+  .holdbar{left:auto;right:56px;transform:none}
+  .lift-result{left:auto;right:56px;transform:none}
+  @keyframes liftpop{0%{opacity:0;transform:translateY(14px) scale(.92)}12%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}
 }

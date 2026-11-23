@@ -7,7 +7,8 @@ locales como texturas WebGL. Por eso todo va dentro del HTML:
   - main.js → <script type="module"> en línea, con las fotos de fondo como data:
   - styles.css, ui.js, horario.js → en línea; fuentes e imágenes → data:
 
-Uso:  python3 tools/grandgym-demo.py  [carpeta_salida]   (por defecto entrega/_demo)
+Uso:  python3 tools/grandgym-demo.py  [carpeta_salida]   (por defecto entrega/_demo, que no se versiona)
+Genera también entrega/Grandgym-demo.zip.
 """
 import base64, json, mimetypes, os, re, sys
 
@@ -90,3 +91,14 @@ assert 'vendor/three' not in html.replace('three/addons', ''), 'queda una ruta a
 with open(os.path.join(OUT, 'Grandgym-ORDENADOR.html'), 'w') as f:
     f.write(html)
 print('Grandgym-ORDENADOR.html', round(len(html) / 1e6, 2), 'MB')
+
+# ── ZIP de la demo: versión ordenador + marco de móvil + instrucciones (tools/demo/) ──
+import shutil, zipfile
+DEMO = os.path.join(ROOT, 'tools', 'demo')
+for f in ('Grandgym-MOVIL.html', 'LEEME - Como abrir la demo.txt'):
+    shutil.copy(os.path.join(DEMO, f), os.path.join(OUT, f))
+zpath = os.path.join(ROOT, 'entrega', 'Grandgym-demo.zip')
+with zipfile.ZipFile(zpath, 'w', zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+    for f in ('Grandgym-ORDENADOR.html', 'Grandgym-MOVIL.html', 'LEEME - Como abrir la demo.txt'):
+        z.write(os.path.join(OUT, f), f)
+print('Grandgym-demo.zip', round(os.path.getsize(zpath) / 1e6, 2), 'MB')

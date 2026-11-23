@@ -571,14 +571,14 @@ function layoutCallouts(vis, area) {
 function update(dt) {
   const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
   const S = sample(clamp01(scrollY / max)), tgt = S.shot;
-  const k = SNAP || dt === 0 ? 1 : 1 - Math.exp(-dt * 4);
+  const k = SNAP || reduceMotion || dt === 0 ? 1 : 1 - Math.exp(-dt * 4); // con «reducir movimiento» la cámara salta sin deslizarse
   for (const key of KEYS) cur[key] += (tgt[key] - cur[key]) * k;
   // etiquetas solo en el plano de despiece que las pide
   const lv = (tgt.labelsA ? 1 - (tgt.labelsT || 0) : 0) + (tgt.labelsB ? tgt.labelsT : 0) + (S.b === null && CUES[S.a].labels ? 1 : 0);
   cur.labels = (cur.labels ?? 0) + (Math.min(1, lv) - (cur.labels ?? 0)) * k;
   const area = (S.t < 0.5 || !S.b ? CUES[S.a] : CUES[S.b]).labels;
 
-  const sdt = (reduceMotion ? 0.5 : 1) * dt * cur.timeScale; // cámara lenta = una multiplicación
+  const sdt = (reduceMotion ? 0 : 1) * dt * cur.timeScale; // cámara lenta = una multiplicación; con «reducir movimiento», quieta
   time += sdt;
   simulate(dt, sdt);
   explode(cur.explode);

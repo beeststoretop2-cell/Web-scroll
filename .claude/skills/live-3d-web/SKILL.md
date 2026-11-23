@@ -27,7 +27,7 @@ Código de referencia listo para adaptar: [reference.md](reference.md).
 
 ## Paso 02 · Un canvas detrás, la historia delante
 - Un único `<canvas>` fijo a pantalla completa (`position: fixed; inset: 0; z-index: 0`) y las secciones HTML normales por encima (`position: relative; z-index: 10`).
-- Una sola clase *engine* que controlas tú entera. **Modo exacto de la guía (por defecto en proyectos nuevos):** Next.js (`npx create-next-app@latest`, export estático) + `npm i three` + `npm i -D @types/three`. Implementación de referencia completa: `tombola/` (engine en `tombola/lib/engine/`). LUMBRA y Grandgym usan `vendor/three` r160 sin Next.js.
+- Una sola clase *engine* que controlas tú entera. **Modo exacto de la guía (por defecto en proyectos nuevos):** Next.js (`npx create-next-app@latest`, export estático) + `npm i three` + `npm i -D @types/three`. Implementación de referencia completa: `tombola/` (engine en `tombola/lib/engine/`). Sin Next.js: Grandgym (`grandgym/main.js`, Three r187 copiado a `grandgym/vendor/three` con importmap) — barra olímpica, mantener para levantar. LUMBRA sigue en `vendor/three` r160.
 - **REGLA: `overflow-x: clip`, nunca `hidden`**, en el contenedor de la página. `hidden` convierte la página en una caja de scroll y todo `position: sticky` deja de pegarse.
 
 ## Paso 03 · Cada pieza desde código

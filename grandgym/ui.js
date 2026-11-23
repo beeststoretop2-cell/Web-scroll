@@ -31,23 +31,39 @@
 
   /* ---------- reveals ---------- */
   $$('.panel > *:not(.mega), .hg-head > *, .marquee').forEach((el) => el.classList.add('reveal'));
-  const io = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  }), { threshold: 0.12, rootMargin: '0px 0px -5% 0px' });
-  $$('.reveal, .mega').forEach((el) => io.observe(el));
-
-  /* ---------- contadores ---------- */
-  const cio = new IntersectionObserver((es) => es.forEach((e) => {
-    if (!e.isIntersecting) return;
-    cio.unobserve(e.target);
-    const el = e.target, to = +el.dataset.count, from = el.hasAttribute('data-plain') ? 1900 : 0, t = performance.now();
+  // Revelados y contadores desde la posición del scroll, no con IntersectionObserver:
+  // los observers se saltan beats en frames pesados de GPU (lección 04 de la guía).
+  let pendingReveal = $$('.reveal, .mega');
+  let pendingCount = reduce ? [] : $$('[data-count]');
+  function countUp(el) {
+    const to = +el.dataset.count, from = el.hasAttribute('data-plain') ? 1900 : 0, t = performance.now();
     (function step(n) {
       const k = Math.min(1, (n - t) / 1600), v = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 4)));
       el.textContent = el.hasAttribute('data-plain') ? v : v.toLocaleString('es-ES');
       if (k < 1) requestAnimationFrame(step);
     })(t);
-  }), { threshold: 0.6 });
-  if (!reduce) $$('[data-count]').forEach((el) => cio.observe(el));
+  }
+  let revealQueued = false;
+  function checkReveals() {
+    revealQueued = false;
+    const h = innerHeight;
+    pendingReveal = pendingReveal.filter((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < h * 0.94 && r.bottom > 0) { el.classList.add('in'); return false; }
+      return true;
+    });
+    pendingCount = pendingCount.filter((el) => {
+      const r = el.getBoundingClientRect();
+      if (r.top < h * 0.8 && r.bottom > 0) { countUp(el); return false; }
+      return true;
+    });
+  }
+  const queueReveal = () => { if (!revealQueued) { revealQueued = true; requestAnimationFrame(checkReveals); } };
+  addEventListener('scroll', queueReveal, { passive: true });
+  addEventListener('resize', queueReveal);
+  // la galería horizontal mueve tarjetas sin cambiar el scroll vertical: repasa también cada 400 ms
+  setInterval(checkReveals, 400);
+  queueReveal();
 
   /* ---------- nav, HUD ---------- */
   const nav = $('#nav'), hudNum = $('#hudNum'), hudFill = $('#hudFill'), hudLabel = $('#hudLabel');

@@ -48,6 +48,21 @@
 </div>
 
 <canvas id="webgl"></canvas>
+<svg id="leaders" class="leaders" aria-hidden="true"></svg>
+<div id="callouts" class="callouts" aria-hidden="true"></div>
+
+<!-- Mantén para levantar: el objeto 3D reacciona (también enciende el sonido y la inclinación del móvil) -->
+<div class="holdbar" role="group" aria-label="Barra 3D">
+  <button class="hold" id="hold" aria-label="Mantén pulsado para levantar la barra">
+    <svg viewBox="0 0 64 64" class="hold-ring" aria-hidden="true"><circle cx="32" cy="32" r="29" class="track"/><circle id="holdRing" cx="32" cy="32" r="29" class="progress" pathLength="1"/></svg>
+    <span class="core"></span>
+  </button>
+  <div class="holdtext"><b>Mantén para levantar</b><span>130 kg · todo en código</span></div>
+  <button class="chip" id="bpToggle" aria-pressed="false">Plano</button>
+  <button class="chip on" id="sndToggle" aria-pressed="true">Sonido</button>
+</div>
+<div class="lift-result" id="liftResult" hidden role="status" aria-live="polite"><b>130 kg</b><span>¡Arriba! Suelta para dejarla caer</span></div>
+<div class="fps" id="fps" aria-hidden="true"></div>
 <div class="scan" aria-hidden="true"></div>
 <div class="vignette" aria-hidden="true"></div>
 <div class="cursor" id="cursor" aria-hidden="true"></div>

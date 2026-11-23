@@ -1,6 +1,6 @@
 # Web-scroll
 
-Webs 3D con scroll en Three.js: LUMBRA en la raíz y Grandgym en `grandgym/` (Three.js r160 local en `vendor/three`), y La Gran Tómbola en `tombola/` (Next.js + Three r187 por npm, hecha exactamente según la guía).
+Webs 3D con scroll en Three.js: LUMBRA en la raíz (Three.js r160 local en `vendor/three`), Grandgym en `grandgym/` (rehecha con la skill: barra olímpica procedural, Three r187 local en `grandgym/vendor/three`) y La Gran Tómbola en `tombola/` (Next.js + Three r187 por npm, hecha exactamente según la guía).
 
 Para cualquier trabajo 3D/scroll en este repo, sigue la skill `live-3d-web` (`.claude/skills/live-3d-web/`):
 cero vídeo y cero modelos descargados, geometría procedural en mm reales con bisel de 0.05 mm, materiales

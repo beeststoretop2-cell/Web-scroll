@@ -1,6 +1,6 @@
 # Código de referencia · live-3d-web
 
-Implementación completa y probada en `tombola/lib/engine/` (Next.js + Three r187). Estos fragmentos son la versión resumida.
+Implementación completa y probada en `grandgym/main.js` (Three r187). Estos fragmentos son la versión resumida.
 
 Fragmentos en JS plano para Three.js (módulos ES). Unidades: **1 = 1 mm**. Adáptalos; no son una librería cerrada.
 

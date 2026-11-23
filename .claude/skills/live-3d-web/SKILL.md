@@ -27,7 +27,7 @@ Código de referencia listo para adaptar: [reference.md](reference.md).
 
 ## Paso 02 · Un canvas detrás, la historia delante
 - Un único `<canvas>` fijo a pantalla completa (`position: fixed; inset: 0; z-index: 0`) y las secciones HTML normales por encima (`position: relative; z-index: 10`).
-- Una sola clase *engine* que controlas tú entera. **Modo exacto de la guía (por defecto en proyectos nuevos):** Next.js (`npx create-next-app@latest`, export estático) + `npm i three` + `npm i -D @types/three`. Implementación de referencia completa: `tombola/` (engine en `tombola/lib/engine/`). Sin Next.js: Grandgym (`grandgym/main.js`, Three r187 copiado a `grandgym/vendor/three` con importmap) — barra olímpica, mantener para levantar. LUMBRA sigue en `vendor/three` r160.
+- Una sola clase *engine* que controlas tú entera. **Modo exacto de la guía (por defecto en proyectos nuevos):** Next.js (`npx create-next-app@latest`, export estático) + `npm i three` + `npm i -D @types/three`. Sin Next.js también funciona: implementación de referencia completa en Grandgym (`grandgym/main.js`, Three r187 copiado a `grandgym/vendor/three` con importmap) — barra olímpica, mantener para levantar. LUMBRA sigue en `vendor/three` r160.
 - **REGLA: `overflow-x: clip`, nunca `hidden`**, en el contenedor de la página. `hidden` convierte la página en una caja de scroll y todo `position: sticky` deja de pegarse.
 
 ## Paso 03 · Cada pieza desde código
@@ -78,7 +78,7 @@ Código de referencia listo para adaptar: [reference.md](reference.md).
 4. **Revelados de texto que fallan al azar** → conduce los revelados desde la posición del scroll, no con IntersectionObserver (se salta beats en frames pesados de GPU).
 5. **Las capturas mienten** → los navegadores headless renderizan 3D a ~1 fps. Usa capturas para composición/encuadre, pero el movimiento se juzga en un móvil real (díselo al usuario).
 
-## Lecciones de la tómbola (aplícalas)
+## Lecciones aprendidas (aplícalas)
 - **Escala del bisel**: 0.05 mm es para un objeto de ~50 mm. Escálalo con el objeto (~0.5 mm para uno de 500 mm) o el borde no captura luz.
 - `ExtrudeGeometry` sale con normales planas: pásala por `toCreasedNormals(geo, 35°)` (BufferGeometryUtils) para paredes curvas suaves sin perder la arista cara/borde.
 - Une los segmentos de marching squares por **identidad de arista de la rejilla**, no por coordenadas en coma flotante (los contornos se rompen).

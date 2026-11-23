@@ -27,7 +27,7 @@ Código de referencia listo para adaptar: [reference.md](reference.md).
 
 ## Paso 02 · Un canvas detrás, la historia delante
 - Un único `<canvas>` fijo a pantalla completa (`position: fixed; inset: 0; z-index: 0`) y las secciones HTML normales por encima (`position: relative; z-index: 10`).
-- Una sola clase *engine* que controlas tú entera (Three.js plano; en Next.js con `npm i three` + `@types/three`; en este repo, el `vendor/three` local).
+- Una sola clase *engine* que controlas tú entera. **Modo exacto de la guía (por defecto en proyectos nuevos):** Next.js (`npx create-next-app@latest`, export estático) + `npm i three` + `npm i -D @types/three`. Implementación de referencia completa: `tombola/` (engine en `tombola/lib/engine/`). LUMBRA y Grandgym usan `vendor/three` r160 sin Next.js.
 - **REGLA: `overflow-x: clip`, nunca `hidden`**, en el contenedor de la página. `hidden` convierte la página en una caja de scroll y todo `position: sticky` deja de pegarse.
 
 ## Paso 03 · Cada pieza desde código
@@ -43,7 +43,7 @@ Código de referencia listo para adaptar: [reference.md](reference.md).
 
 ## Paso 05 · Ilumina como un fotógrafo
 - El metal solo es tan bueno como lo que refleja. Construye un **mini estudio** (habitación oscura + 1 softbox clave fuera de eje + 2 tiras laterales de luz que dibujan la línea del borde) y **hornéalo** con `PMREMGenerator.fromScene(studio)` en `scene.environment`.
-- Rota el entorno con el cursor (`scene.environmentRotation`, Three ≥ r162). **Este repo usa r160**: o se actualiza `vendor/three`, o se rota el grupo del objeto/estudio (ver reference.md).
+- Rota el entorno con el cursor: `scene.environmentRotation.set(y * .45, -x * .8, 0)` (Three ≥ r162; con npm ya lo tienes. En `vendor/three` r160 no existe, ver reference.md).
 - **REGLA: el cristal refleja solo el estudio.** Sin luces directas sobre él, o aparece un punto caliente falso.
 
 ## Paso 06 · Que el scroll dirija la cámara
@@ -77,6 +77,18 @@ Código de referencia listo para adaptar: [reference.md](reference.md).
 3. **Punto caliente en mitad del cristal** → el cristal refleja solo el entorno, mezclado en aditivo por encima (sin luces directas).
 4. **Revelados de texto que fallan al azar** → conduce los revelados desde la posición del scroll, no con IntersectionObserver (se salta beats en frames pesados de GPU).
 5. **Las capturas mienten** → los navegadores headless renderizan 3D a ~1 fps. Usa capturas para composición/encuadre, pero el movimiento se juzga en un móvil real (díselo al usuario).
+
+## Lecciones de la tómbola (aplícalas)
+- **Escala del bisel**: 0.05 mm es para un objeto de ~50 mm. Escálalo con el objeto (~0.5 mm para uno de 500 mm) o el borde no captura luz.
+- `ExtrudeGeometry` sale con normales planas: pásala por `toCreasedNormals(geo, 35°)` (BufferGeometryUtils) para paredes curvas suaves sin perder la arista cara/borde.
+- Une los segmentos de marching squares por **identidad de arista de la rejilla**, no por coordenadas en coma flotante (los contornos se rompen).
+- Piezas hijas de un grupo que gira (rotor): convierte su `lift` con la rotación inversa del rotor para que salgan "hacia arriba" en el mundo.
+- Las tiras de luz del estudio queman fácilmente las caras anisotrópicas → empezar con intensidades ~2.5 y bloom 0.4 / umbral 0.98.
+- **Tailwind v4**: no uses clases `.ring`, `.shadow`, `.border`… para tu propio CSS; chocan con utilidades (el `.ring` dibujó un marco cuadrado).
+- Las etiquetas/callouts solo en el plano de despiece (campo `labels` en el cue); en otras secciones chocan con el texto.
+- Copia encima del render: un *scrim* radial suave detrás de cada bloque de texto.
+- Móvil vertical: sin `offsetX`; objeto arriba (`setViewOffset` con y ≈ 0.2·alto) y encuadre ×1.2; texto abajo.
+- Capturas headless: añade un modo `?snap` que quite el damping de cámara; un ciclo de "mantener" tarda ~1 min en headless.
 
 ## Flujo de trabajo obligatorio
 1. Confirma **[OBJETO]** y **[VERBO]** (si el usuario no los da, propón y sigue), tabla de piezas en mm, frame miniatura y los 5 tiempos.

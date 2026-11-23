@@ -1,5 +1,7 @@
 # Código de referencia · live-3d-web
 
+Implementación completa y probada en `tombola/lib/engine/` (Next.js + Three r187). Estos fragmentos son la versión resumida.
+
 Fragmentos en JS plano para Three.js (módulos ES). Unidades: **1 = 1 mm**. Adáptalos; no son una librería cerrada.
 
 ## 1 · Geometría: SDF 2D → contorno → extrusión
@@ -141,9 +143,8 @@ const studio = buildStudio();
 scene.environment = pmrem.fromScene(studio, 0.02).texture;
 
 // cursor → rotación del entorno
-// r162+: scene.environmentRotation.set(my * .45, -mx * .8, 0)
-// r160 (este repo): rota `studio` y vuelve a hornear con throttle (≤ 15 Hz), o rota el grupo del objeto
-// y compensa con la cámara. Recomendado: actualizar vendor/three a ≥ 0.162.
+scene.environmentRotation.set(my * .45, -mx * .8, 0)   // Three ≥ r162 (npm)
+// solo con vendor/three r160 (LUMBRA/Grandgym): rota `studio` y re-hornea con throttle (≤ 15 Hz)
 ```
 Nada de `DirectionalLight`/`PointLight` que afecten al cristal; si hacen falta para sombras, ponlas en una `layer` que el cristal no vea.
 
@@ -276,11 +277,11 @@ function holdTo(el, ring, ms, onDone) {
 ## 7 · Post, calidad adaptativa, sin tirones
 
 ```js
-import { EffectComposer } from './vendor/three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from './vendor/three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from './vendor/three/addons/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from './vendor/three/addons/postprocessing/ShaderPass.js';
-import { OutputPass } from './vendor/three/addons/postprocessing/OutputPass.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/examples/jsm/postprocessing/OutputPass.js';
 
 const isPhone = matchMedia('(pointer: coarse)').matches;
 let pr = Math.min(devicePixelRatio, isPhone ? 1.75 : 2);

@@ -149,6 +149,7 @@ main{position:relative;z-index:2}
 .kpis dt{font-family:var(--fm);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
 .kpis dd{font-family:var(--fd);font-weight:700;font-size:clamp(24px,2.4vw,34px);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .kpis small{color:var(--orange);font-size:.7em;margin-left:2px}
+.kpis small.unit{color:var(--ice);font-size:.55em;margin-left:5px;letter-spacing:0}
 .scroll-cue{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--fm);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--mute)}
 .scroll-cue span{width:1px;height:46px;background:linear-gradient(var(--flame-b),transparent);animation:cue 1.8s infinite}
 @keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
